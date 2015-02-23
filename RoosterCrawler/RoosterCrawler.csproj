@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="c00084.htm" />
+    <Content Include="HTMLPage1.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
