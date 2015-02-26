@@ -5,9 +5,9 @@ using System.Text;
 
 namespace RoosterCrawler
 {
-    class Day
+    public class Day
     {
-        private String[] hours = new String[24];
+        private String[] _hours = new String[24];
         public Day()
         {
 
@@ -15,11 +15,11 @@ namespace RoosterCrawler
 
         public void Add(String s)
         {
-            for (int i = 0; i < hours.Length; i++ )
+            for (int i = 0; i < _hours.Length; i++ )
             {
-                if (hours[i] == null)
+                if (_hours[i] == null)
                 {
-                    hours[i] = s != null ? s : "";
+                    _hours[i] = s != null ? s : "";
                     break;
                 }
 
@@ -28,12 +28,12 @@ namespace RoosterCrawler
 
         public void AddAt(String s, int index)
         {
-            hours[index] = s;
+            _hours[index] = s;
         }
 
         public bool Available(int index)
         {
-            return hours[index] == null;
+            return _hours[index] == null;
         }
     }
 }

@@ -5,14 +5,15 @@ using System.Text;
 
 namespace RoosterCrawler
 {
-    class Week
+    public class Week
     {
-        public Day[] days = new Day[6];
+        public Day[] Days = new Day[6];
+
         public Week()
         {
-            for (int i = 0;i < days.Length ; i++ )
+            for (int i = 0; i < Days.Length; i++)
             {
-                days[i] = new Day();
+                Days[i] = new Day();
             }
         }
     }
