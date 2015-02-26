@@ -7,7 +7,7 @@ namespace RoosterCrawler
 {
     public class Day
     {
-        private String[] _hours = new String[24];
+        private String[] _hours = new String[15];
         public Day()
         {
 
