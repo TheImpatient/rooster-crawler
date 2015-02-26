@@ -9,7 +9,7 @@ namespace RoosterCrawler
 {
     public static class DataParser
     {
-        //TODO: catch webclient errors / sanitise input / Divide parts into functions for readability
+        //TODO: catch webclient errors / sanitise input / Divide parts into functions for readability / Consider giving Week some of these functions (Maybe all)
         public static Week GetExternalWeekSchedule()
         {
             //WebClient webClient = new WebClient();
