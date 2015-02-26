@@ -7,7 +7,7 @@ namespace RoosterCrawler
 {
     public class Week
     {
-        public Day[] Days = new Day[6];
+        public Day[] Days = new Day[5];
 
         public Week()
         {

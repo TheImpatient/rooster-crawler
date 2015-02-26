@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HtmlAgilityPack;
+using System.Text.RegularExpressions;
 
 namespace RoosterCrawler
 {
     public static class DataParser
     {
-        //TODO: catch webclient errors / sanitise input / get around idiosyncrasy / loop TR's instead of TD's to track row
+        //TODO: catch webclient errors / sanitise input / Divide parts into functions for readability
         public static Week GetExternalWeekSchedule()
         {
             //WebClient webClient = new WebClient();
@@ -23,11 +24,7 @@ namespace RoosterCrawler
             List<HtmlNode> table = htmldoc.DocumentNode.SelectNodes("//table").First().SelectNodes("tr/td").ToList();
 
 
-            //Lists all elements innerText per row
-
-            //List<String>[] strArr = new List<String>[37];
-            //for (int i = 0; i < strArr.Length; i++) { strArr[i] = new List<string>(); }
-
+            //Contains all data per week, day, hour
             Week week = new Week();
 
 
@@ -37,57 +34,82 @@ namespace RoosterCrawler
             List<int> rowspanList = new List<int>();
 
 
-            int j = 0;
-
-            foreach (HtmlNode h in table)
+            int rowCount = 0;
+            int columnCount = 0;
+            List<HtmlNode> tableRows = htmldoc.DocumentNode.SelectNodes("//table").First().SelectNodes("tr").Skip(1).Where((x, i) => i % 2 == 0).ToList();
+            IEnumerable<HtmlNode> tableDatas = new List<HtmlNode>();
+            HtmlAttribute rowspan;
+            foreach (HtmlNode tr in tableRows)
             {
+                columnCount = 0;
+                Console.WriteLine(tr.ChildNodes.Count-1);
 
-                //String inner = h.InnerText != "" ? h.InnerText : "EMPTY";
-                for (int i = 0; i < week.Days.Length - j % 6; i++)
+                tableDatas = tr.ChildNodes.Skip(1);
+                foreach (HtmlNode td in tableDatas)
                 {
-                    if (week.Days[j % 6 + i].Available((int)j / 6))
+                    //Check for bold text
+                    HtmlDocument t = new HtmlDocument();
+                    t.LoadHtml(td.InnerHtml);
+                    Regex regex = new Regex("([:])");
+
+
+                    if (td.InnerText != "" && t.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)
                     {
-                        week.Days[j % 6 + i].Add(h.InnerText);
-                        break;
+                        Match m = regex.Match(td.InnerText);
+                        if (!(regex.Match(td.InnerText)).Success)
+                        {
+                            Console.WriteLine("hebbes");
+                        }
+
                     }
-                }
 
-
-
-                innerTextList.Add(h.InnerText);
-
-                HtmlAttribute rowspan = h.Attributes.Where(x => x.Name.Equals("rowspan")).SingleOrDefault();
-                int rowvalue = 0;
-                try
-                {
-                    rowvalue = int.Parse(rowspan != null ? rowspan.Value : "EMPTY");
-                    rowspanList.Add(rowvalue);
-                }
-                catch (FormatException e)
-                {
-                    rowspanList.Add(0);
-                }
-
-
-
-                if (rowvalue >= 4)
-                {
-                    for (int i = 1; i < rowvalue / 2; i++)
+                    for (int i = 0; i < week.Days.Length - columnCount; i++)
                     {
-                        week.Days[j % 6].Add(h.InnerText);
+                        if (week.Days[columnCount + i].Available(rowCount))
+                        {
+                            //Add to day
+                            week.Days[columnCount + i].Add(td.InnerText);
+
+                            //Check for rowspan
+                            rowspan = td.Attributes.Where(x => x.Name.Equals("rowspan")).SingleOrDefault();
+                            int rowvalue = 0;
+                            try
+                            {
+                                rowvalue = int.Parse(rowspan != null ? rowspan.Value : "EMPTY");
+                                rowspanList.Add(rowvalue);
+                            }
+                            catch (FormatException e)
+                            {
+                                rowspanList.Add(0);
+                            }
+
+                            if (rowvalue >= 4)
+                            {
+                                for (int j = 1; j < rowvalue / 2; j++)
+                                {
+                                    week.Days[columnCount + i].Add(td.InnerText);
+                                }
+                            }
+
+                            break;
+                        }
                     }
+
+
+                    Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    Console.WriteLine(td.InnerHtml);
+
+
+                    columnCount++;
                 }
-
-
-                j++;
-                Console.WriteLine("~~~~~~I:" + rowvalue);
+                rowCount++;
             }
             return week;
         }
 
         public static Week GetInternalWeekSchedule()
         {
-            return new Week();            
+            return new Week();
         }
     }
 }
