@@ -4,23 +4,27 @@ using System.Linq;
 using System.Text;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace RoosterCrawler
 {
     public static class DataParser
     {
-        //TODO: catch webclient errors / sanitise input / Divide parts into functions for readability / Consider giving Week some of these functions (Maybe all)
-        public static Week GetExternalWeekSchedule()
+        //TODO: catch webclient errors / sanitise input more / Divide parts into functions for readability / Consider giving Week some of these functions (Maybe all)
+        public static Week GetExternalWeekSchedule(int weekNummer)
         {
-            //WebClient webClient = new WebClient();
-            //String page2 = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/10/c/c00084.htm");
+            WebClient webClient = new WebClient();
 
-            String page = System.IO.File.ReadAllText("c00084.htm").Trim();
+            //TODO: catch and handle 404exception, and other webclient exceptions
+            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + weekNummer + "/c/c00084.htm").Trim();
+
+            //String page = System.IO.File.ReadAllText("c00084.htm").Trim();
+
+            page = page.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
             HtmlDocument htmldoc = new HtmlDocument();
             htmldoc.LoadHtml(page);
 
-            //TODO: Filter only relevant tabledata
             List<HtmlNode> table = htmldoc.DocumentNode.SelectNodes("//table").First().SelectNodes("tr/td").ToList();
 
 
