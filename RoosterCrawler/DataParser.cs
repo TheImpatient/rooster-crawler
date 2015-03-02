@@ -155,6 +155,15 @@ namespace RoosterCrawler
                                     }
                                     else// geen les
                                     {
+                                        week.Days[columnCount + i].Add(
+                                            new Les()
+                                            {
+                                                Lokaal = String.Empty,
+                                                Docent = String.Empty,
+                                                Vak = String.Empty,
+                                                VakCode = String.Empty,
+                                                VakId = 0
+                                            });
 
                                     }
                                 }
