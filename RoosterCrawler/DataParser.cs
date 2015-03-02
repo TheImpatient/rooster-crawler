@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using HtmlAgilityPack;
@@ -59,19 +60,39 @@ namespace RoosterCrawler
                             HtmlDocument doc = new HtmlDocument();
                             doc.LoadHtml(td.InnerHtml);
 
-                            if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)
+                            if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)//er is een lokaal bekent
                             {
-                                week.Days[columnCount + i].Add("LOKAAL: " + td.InnerText);
+                                string[] a = td.InnerText.Split(')');
+                                string[] b = a[0].Split(' ');
+
+                                week.Days[columnCount + i].Add(
+                                    new Les()
+                                    {
+                                        Lokaal = b[0],
+                                        Docent = b[1],
+                                        Vak = a[1].Trim(),
+                                        VakCode = b[2],
+                                        VakId = int.Parse(b[3])
+                                    });
                             }
-                            else if (td.InnerText == "")
+                            else if (td.InnerText != "")//er is geen lokaal bekent
                             {
-                                //Add to day
-                                //week.Days[columnCount + i].Add("");
+                                string[] a = td.InnerText.Split(')');
+                                string[] b = a[0].Split(' ');
+
+                                week.Days[columnCount + i].Add(
+                                    new Les()
+                                    {
+                                        Lokaal = String.Empty,
+                                        Docent = b[0],
+                                        Vak = a[1].Trim(),
+                                        VakCode = b[1],
+                                        VakId = int.Parse(b[2])
+                                    });
                             }
-                            else
+                            else// geen les
                             {
-                                //Add to day
-                                week.Days[columnCount + i].Add("GEEN LOKAAL: " + td.InnerText);
+                                
                             }
 
                             ////check for consecutive lessons
@@ -94,13 +115,39 @@ namespace RoosterCrawler
                                 {
                                     //Check for bold text
                                     doc.LoadHtml(td.InnerHtml);
-                                    if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)
+                                    if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)//lokaal bekent
                                     {
-                                        week.Days[columnCount + i].Add("LOKAAL: "+td.InnerText);
+                                        string[] a = td.InnerText.Split(')');
+                                        string[] b = a[0].Split(' ');
+
+                                        week.Days[columnCount + i].Add(
+                                            new Les()
+                                            {
+                                                Lokaal = b[0],
+                                                Docent = b[1],
+                                                Vak = a[1].Trim(),
+                                                VakCode = b[2],
+                                                VakId = int.Parse(b[3])
+                                            });
                                     }
-                                    else
+                                    else if (td.InnerText != "")//er is geen lokaal bekent
                                     {
-                                        week.Days[columnCount + i].Add("GEEN LOKAAL: " + td.InnerText);
+                                        string[] a = td.InnerText.Split(')');
+                                        string[] b = a[0].Split(' ');
+
+                                        week.Days[columnCount + i].Add(
+                                            new Les()
+                                            {
+                                                Lokaal = String.Empty,
+                                                Docent = b[0],
+                                                Vak = a[1].Trim(),
+                                                VakCode = b[1],
+                                                VakId = int.Parse(b[2])
+                                            });
+                                    }
+                                    else// geen les
+                                    {
+                                        
                                     }
                                 }
                             }
