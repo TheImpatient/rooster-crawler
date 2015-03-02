@@ -50,30 +50,31 @@ namespace RoosterCrawler
 
                 tableDatas = tr.ChildNodes.Skip(1);
                 foreach (HtmlNode td in tableDatas)
-                {
-                    //Check for bold text
-                    HtmlDocument t = new HtmlDocument();
-                    t.LoadHtml(td.InnerHtml);
-                    Regex regex = new Regex("([:])");
-
-
-                    if (td.InnerText != "" && t.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)
-                    {
-                        Match m = regex.Match(td.InnerText);
-                        if (!(regex.Match(td.InnerText)).Success)
-                        {
-                            Console.WriteLine("hebbes");
-                        }
-
-                    }
-
+                {                    
                     for (int i = 0; i < week.Days.Length - columnCount; i++)
                     {
                         if (week.Days[columnCount + i].Available(rowCount))
                         {
-                            //Add to day
-                            week.Days[columnCount + i].Add(td.InnerText);
+                            //Check for bold text
+                            HtmlDocument doc = new HtmlDocument();
+                            doc.LoadHtml(td.InnerHtml);
 
+                            if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)
+                            {
+                                week.Days[columnCount + i].Add("LOKAAL: " + td.InnerText);
+                            }
+                            else if (td.InnerText == "")
+                            {
+                                //Add to day
+                                //week.Days[columnCount + i].Add("");
+                            }
+                            else
+                            {
+                                //Add to day
+                                week.Days[columnCount + i].Add("GEEN LOKAAL: " + td.InnerText);
+                            }
+
+                            ////check for consecutive lessons
                             //Check for rowspan
                             rowspan = td.Attributes.Where(x => x.Name.Equals("rowspan")).SingleOrDefault();
                             int rowvalue = 0;
@@ -86,15 +87,25 @@ namespace RoosterCrawler
                             {
                                 rowspanList.Add(0);
                             }
-
+                            //wat doet deze check ? 
                             if (rowvalue >= 4)
                             {
                                 for (int j = 1; j < rowvalue / 2; j++)
                                 {
-                                    week.Days[columnCount + i].Add(td.InnerText);
+                                    //Check for bold text
+                                    doc.LoadHtml(td.InnerHtml);
+                                    if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)
+                                    {
+                                        week.Days[columnCount + i].Add("LOKAAL: "+td.InnerText);
+                                    }
+                                    else
+                                    {
+                                        week.Days[columnCount + i].Add("GEEN LOKAAL: " + td.InnerText);
+                                    }
                                 }
                             }
 
+                            
                             break;
                         }
                     }
