@@ -47,11 +47,11 @@ namespace RoosterCrawler
             foreach (HtmlNode tr in tableRows)
             {
                 columnCount = 0;
-                Console.WriteLine(tr.ChildNodes.Count-1);
+                Console.WriteLine(tr.ChildNodes.Count - 1);
 
                 tableDatas = tr.ChildNodes.Skip(1);
                 foreach (HtmlNode td in tableDatas)
-                {                    
+                {
                     for (int i = 0; i < week.Days.Length - columnCount; i++)
                     {
                         if (week.Days[columnCount + i].Available(rowCount))
@@ -92,7 +92,15 @@ namespace RoosterCrawler
                             }
                             else// geen les
                             {
-                                
+                                week.Days[columnCount + i].Add(
+                                new Les()
+                                {
+                                    Lokaal = String.Empty,
+                                    Docent = String.Empty,
+                                    Vak = String.Empty,
+                                    VakCode = String.Empty,
+                                    VakId = 0
+                                });
                             }
 
                             ////check for consecutive lessons
@@ -147,20 +155,17 @@ namespace RoosterCrawler
                                     }
                                     else// geen les
                                     {
-                                        
+
                                     }
                                 }
                             }
 
-                            
+
                             break;
                         }
                     }
-
-
-                    Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    Console.WriteLine(td.InnerHtml);
-
+                    //Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                    //Console.WriteLine(td.InnerHtml);
 
                     columnCount++;
                 }

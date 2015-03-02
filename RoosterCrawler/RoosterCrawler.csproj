@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataParser.cs" />
-    <Compile Include="Les.cs" />
+    <Compile Include="schedule\Les.cs" />
     <Compile Include="Schedule.cs" />
     <Compile Include="schedule\Day.cs" />
     <Compile Include="Program.cs" />
