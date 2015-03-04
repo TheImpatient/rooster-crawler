@@ -55,6 +55,20 @@ namespace RoosterCrawler
                     {
                         if (week.Days[columnCount + i].Available(rowCount))
                         {
+
+
+                            //Bepaal de lengte van de les
+                            rowspan = td.Attributes.Where(x => x.Name.Equals("rowspan")).SingleOrDefault();
+                            int rowvalue;
+                            try
+                            {
+                                rowvalue = int.Parse(rowspan != null ? rowspan.Value : "EMPTY");
+                            }
+                            catch (FormatException)
+                            {
+                                rowvalue = 0;
+                            }
+
                             //Check for bold text
                             HtmlDocument doc = new HtmlDocument();
                             doc.LoadHtml(td.InnerHtml);
@@ -71,7 +85,8 @@ namespace RoosterCrawler
                                         Docent = b[1],
                                         Vak = a[1].Trim(),
                                         VakCode = b[2],
-                                        VakId = int.Parse(b[3])
+                                        VakId = int.Parse(b[3]),
+                                        Lengte = rowvalue * 25
                                     });
                             }
                             else if (td.InnerText != "") //er is geen lokaal bekend
@@ -86,7 +101,8 @@ namespace RoosterCrawler
                                         Docent = b[0],
                                         Vak = a[1].Trim(),
                                         VakCode = b[1],
-                                        VakId = int.Parse(b[2])
+                                        VakId = int.Parse(b[2]),
+                                        Lengte = rowvalue * 25
                                     });
                             }
                             else// geen les
@@ -98,73 +114,27 @@ namespace RoosterCrawler
                                     Docent = String.Empty,
                                     Vak = String.Empty,
                                     VakCode = String.Empty,
-                                    VakId = 0
+                                    VakId = 0,
+                                    Lengte = 0
                                 });
                             }
 
-                            //check for consecutive lessons
-                            //Check for rowspan
-                            rowspan = td.Attributes.Where(x => x.Name.Equals("rowspan")).SingleOrDefault();
-                            int rowvalue = 0;
-                            try
-                            {
-                                rowvalue = int.Parse(rowspan != null ? rowspan.Value : "EMPTY");
-                                rowspanList.Add(rowvalue);
-                            }
-                            catch (FormatException)
-                            {
-                                rowspanList.Add(0);
-                            }
-                            //Als de les langer dan 1 uur duurt
+                            //Als de les langer dan 1 uur duurt, hou deze plaatsen bezet
                             if (rowvalue >= 4)
                             {
                                 for (int j = 1; j < rowvalue / 2; j++)
                                 {
                                     //Check for bold text
-                                    doc.LoadHtml(td.InnerHtml);
-                                    if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)//lokaal bekend
-                                    {
-                                        string[] a = td.InnerText.Split(')');
-                                        string[] b = a[0].Split(' ');
-
-                                        week.Days[columnCount + i].Add(
-                                            new Les()
-                                            {
-                                                Lokaal = b[0],
-                                                Docent = b[1],
-                                                Vak = a[1].Trim(),
-                                                VakCode = b[2],
-                                                VakId = int.Parse(b[3])
-                                            });
-                                    }
-                                    else if (td.InnerText != "")//er is geen lokaal bekend
-                                    {
-                                        string[] a = td.InnerText.Split(')');
-                                        string[] b = a[0].Split(' ');
-
-                                        week.Days[columnCount + i].Add(
-                                            new Les()
-                                            {
-                                                Lokaal = String.Empty,
-                                                Docent = b[0],
-                                                Vak = a[1].Trim(),
-                                                VakCode = b[1],
-                                                VakId = int.Parse(b[2])
-                                            });
-                                    }
-                                    else// geen les
-                                    {
-                                        week.Days[columnCount + i].Add(
-                                            new Les()
-                                            {
-                                                Lokaal = String.Empty,
-                                                Docent = String.Empty,
-                                                Vak = String.Empty,
-                                                VakCode = String.Empty,
-                                                VakId = 0
-                                            });
-
-                                    }
+                                    week.Days[columnCount + i].Add(
+                                        new Les()
+                                        {
+                                            Lokaal = String.Empty,
+                                            Docent = String.Empty,
+                                            Vak = String.Empty,
+                                            VakCode = String.Empty,
+                                            VakId = 0,
+                                            Lengte = 0
+                                        });
                                 }
                             }
                             break;

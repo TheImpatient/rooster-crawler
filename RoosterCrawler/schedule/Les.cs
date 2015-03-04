@@ -12,5 +12,6 @@ namespace RoosterCrawler
         public string VakCode { get; set; }
         public int VakId { get; set; }
         public string Vak { get; set; }
+        public int Lengte { get; set; }
     }
 }
