@@ -87,9 +87,11 @@ namespace RoosterCrawler
              */
 
             String query = "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte) VALUES";
+
             int dayIndex = 0;
-            int repeatingcount = 0;
-            Les lastLes;
+
+            //int repeatingcount = 0;
+            //Les lastLes;
 
             var foo = FirstDateOfWeek(2015, week.WeekNummer);
 

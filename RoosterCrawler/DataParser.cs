@@ -111,11 +111,11 @@ namespace RoosterCrawler
                                 rowvalue = int.Parse(rowspan != null ? rowspan.Value : "EMPTY");
                                 rowspanList.Add(rowvalue);
                             }
-                            catch (FormatException e)
+                            catch (FormatException)
                             {
                                 rowspanList.Add(0);
                             }
-                            //wat doet deze check ?
+                            //Als de les langer dan 1 uur duurt
                             if (rowvalue >= 4)
                             {
                                 for (int j = 1; j < rowvalue / 2; j++)
@@ -167,8 +167,6 @@ namespace RoosterCrawler
                                     }
                                 }
                             }
-
-
                             break;
                         }
                     }
@@ -176,6 +174,8 @@ namespace RoosterCrawler
                 }
                 rowCount++;
             }
+
+
             return week;
         }
 
