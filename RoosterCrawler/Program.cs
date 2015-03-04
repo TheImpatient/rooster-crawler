@@ -18,7 +18,7 @@ namespace RoosterCrawler
             //_schedule = new Schedule();
 
 
-            const string connectionString = @"Server=195.8.208.128;Port=3351;Database=rooster;Uid=crawler;Pwd=g!MqEFCXbVK0P3hv^Jy5;";
+            const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;
             MySqlDataReader reader = null;
             string deelnemers = String.Empty;
