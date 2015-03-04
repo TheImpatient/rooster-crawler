@@ -47,7 +47,6 @@ namespace RoosterCrawler
             foreach (HtmlNode tr in tableRows)
             {
                 columnCount = 0;
-                Console.WriteLine(tr.ChildNodes.Count - 1);
 
                 tableDatas = tr.ChildNodes.Skip(1);
                 foreach (HtmlNode td in tableDatas)
@@ -173,9 +172,6 @@ namespace RoosterCrawler
                             break;
                         }
                     }
-                    //Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    //Console.WriteLine(td.InnerHtml);
-
                     columnCount++;
                 }
                 rowCount++;
