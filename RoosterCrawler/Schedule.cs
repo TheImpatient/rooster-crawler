@@ -9,14 +9,21 @@ namespace RoosterCrawler
     {
         public Week ExternalWeek;
         public Week InternalWeek;
-        
+
         public Schedule()
         {
             //TODO: checksum version database vs crawler for newer version of week / pull all weeks and save them per class
             ExternalWeek = DataParser.GetExternalWeekSchedule(11);
-            //InternalWeek = DataParser.GetInternalWeekSchedule();
+            InternalWeek = DataParser.GetInternalWeekSchedule();
 
+            //Check if crawlerdata is different from database
+            if (ExternalWeek != InternalWeek)
+            {
+                
+            }
 
         }
+
+
     }
 }

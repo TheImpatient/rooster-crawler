@@ -7,7 +7,7 @@ namespace RoosterCrawler
 {
     public class Day
     {
-        private Les[] _lessen = new Les[15];
+        public Les[] lessen = new Les[15];
         public Day()
         {
 
@@ -15,11 +15,11 @@ namespace RoosterCrawler
 
         public void Add(Les s)
         {
-            for (int i = 0; i < _lessen.Length; i++ )
+            for (int i = 0; i < lessen.Length; i++ )
             {
-                if (_lessen[i] == null)
+                if (lessen[i] == null)
                 {
-                    _lessen[i] = s != null ? s : new Les(); // <<dit is vragen om problemen thijs
+                    lessen[i] = s != null ? s : new Les(); // <<dit is vragen om problemen thijs
                     break;
                 }
             }
@@ -27,12 +27,12 @@ namespace RoosterCrawler
 
         public void AddAt(Les s, int index)
         {
-            _lessen[index] = s;
+            lessen[index] = s;
         }
 
         public bool Available(int index)
         {
-            return _lessen[index] == null;
+            return lessen[index] == null;
         }
     }
 }

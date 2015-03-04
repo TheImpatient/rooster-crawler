@@ -11,7 +11,7 @@ namespace RoosterCrawler
 {
     public static class DataParser
     {
-        //TODO: catch webclient errors / sanitise input more / Divide parts into functions for readability / Consider giving Week some of these functions (Maybe all)
+        //TODO: catch webclient errors / sanitise input more / divide parts into functions for readability
         public static Week GetExternalWeekSchedule(int weekNummer)
         {
             WebClient webClient = new WebClient();
@@ -31,7 +31,7 @@ namespace RoosterCrawler
 
             //Contains all data per week, day, hour
             Week week = new Week();
-
+            week.WeekNummer = weekNummer;
 
 
             //Lists all elements innerText
@@ -60,7 +60,7 @@ namespace RoosterCrawler
                             HtmlDocument doc = new HtmlDocument();
                             doc.LoadHtml(td.InnerHtml);
 
-                            if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)//er is een lokaal bekent
+                            if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null) //er is een lokaal bekend
                             {
                                 string[] a = td.InnerText.Split(')');
                                 string[] b = a[0].Split(' ');
@@ -75,7 +75,7 @@ namespace RoosterCrawler
                                         VakId = int.Parse(b[3])
                                     });
                             }
-                            else if (td.InnerText != "")//er is geen lokaal bekent
+                            else if (td.InnerText != "") //er is geen lokaal bekend
                             {
                                 string[] a = td.InnerText.Split(')');
                                 string[] b = a[0].Split(' ');
@@ -103,7 +103,7 @@ namespace RoosterCrawler
                                 });
                             }
 
-                            ////check for consecutive lessons
+                            //check for consecutive lessons
                             //Check for rowspan
                             rowspan = td.Attributes.Where(x => x.Name.Equals("rowspan")).SingleOrDefault();
                             int rowvalue = 0;
@@ -116,14 +116,14 @@ namespace RoosterCrawler
                             {
                                 rowspanList.Add(0);
                             }
-                            //wat doet deze check ? 
+                            //wat doet deze check ?
                             if (rowvalue >= 4)
                             {
                                 for (int j = 1; j < rowvalue / 2; j++)
                                 {
                                     //Check for bold text
                                     doc.LoadHtml(td.InnerHtml);
-                                    if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)//lokaal bekent
+                                    if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null)//lokaal bekend
                                     {
                                         string[] a = td.InnerText.Split(')');
                                         string[] b = a[0].Split(' ');
@@ -138,7 +138,7 @@ namespace RoosterCrawler
                                                 VakId = int.Parse(b[3])
                                             });
                                     }
-                                    else if (td.InnerText != "")//er is geen lokaal bekent
+                                    else if (td.InnerText != "")//er is geen lokaal bekend
                                     {
                                         string[] a = td.InnerText.Split(')');
                                         string[] b = a[0].Split(' ');

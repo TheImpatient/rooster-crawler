@@ -8,6 +8,7 @@ namespace RoosterCrawler
     public class Week
     {
         public Day[] Days = new Day[5];
+        public int WeekNummer;
 
         public Week()
         {

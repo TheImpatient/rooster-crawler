@@ -15,7 +15,7 @@ namespace RoosterCrawler
 
         public void Main()
         {
-            //_schedule = new Schedule();
+            _schedule = new Schedule();
 
 
             const string connectionString = @Credentials.ConnectionString;
@@ -28,8 +28,11 @@ namespace RoosterCrawler
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
 
-                const string query = "SELECT * FROM les";
+                string query = WeekToQuery(_schedule.ExternalWeek);
                 var sqlCommand = new MySqlCommand(query, connection);
+                sqlCommand.Prepare();
+                sqlCommand.ExecuteNonQuery();
+                /*
                 reader = sqlCommand.ExecuteReader();
 
                 while (reader.Read())
@@ -37,6 +40,7 @@ namespace RoosterCrawler
                     deelnemers = (string)reader.GetValue(1);
                     
                 }
+                */
             }
             catch (MySqlException err)
             {
@@ -54,11 +58,39 @@ namespace RoosterCrawler
                 }
             }
 
-
+            connection.Close();
             //Week foo = DataParser();
             //Console.WriteLine(foo);
             Console.Read();
         }
+        private String WeekToQuery(Week week)
+        {
+            /*
+             INSERT INTO les
+            (docent, vak, vak_code, vak_id, start_tijd, lengte)
+            VALUES
+            (docent, vak, vak_code, vak_id, start_tijd, lengte),
+            (docent, vak, vak_code, vak_id, start_tijd, lengte),
+            (docent, vak, vak_code, vak_id, start_tijd, lengte),
+            (docent, vak, vak_code, vak_id, start_tijd, lengte);
+             */
 
+            String query = "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte) VALUES";
+
+            foreach (Day d in week.Days)
+            {
+
+                foreach (Les l in d.lessen)
+                {
+                    if (l.Docent != "" && l.Vak != "" && l.VakCode != "" && l.VakId != 0)
+                    {
+                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '2000-12-31 23:59:59', '00:50:00'),";
+                    }
+                }
+            }
+            query = query.Remove(query.Length - 1) + ";";
+
+            return query;
+        }
     }
 }
