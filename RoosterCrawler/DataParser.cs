@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Web.Script.Serialization;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
 using System.Net;
+using MySql.Data.MySqlClient;
 
 namespace RoosterCrawler
 {
@@ -152,6 +154,93 @@ namespace RoosterCrawler
         public static Week GetInternalWeekSchedule()
         {
             return new Week();
+        }
+
+        public static List<TaskSchedular.CrawlTask> GetCrawlSchedule()
+        {
+            const string connectionString = @Credentials.ConnectionString;
+            MySqlConnection connection = null;
+            MySqlDataReader reader = null;
+            string log = String.Empty;
+            List<TaskSchedular.CrawlTask> list = new List<TaskSchedular.CrawlTask>();
+            var jss = new JavaScriptSerializer();
+
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+
+                var sqlCommand = new MySqlCommand("SELECT * FROM crawl_schedule WHERE date = "+DateTime.Now.Date, connection);
+                reader = sqlCommand.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    var task = jss.Deserialize<TaskSchedular.CrawlTask>((string) reader.GetValue(2));
+                    task.Id = (int) reader.GetValue(1);
+                    task.Datetime = DateTime.Parse((string)reader.GetValue(5));
+                    task.Interval = (int) reader.GetValue(3);
+                    task.Weken = (int) reader.GetValue(4);
+
+                    list.Add(task);
+                }
+
+                connection.Close();
+            }
+            catch (MySqlException err)
+            {
+                log = err.ToString();
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+
+            return list;
+        }
+
+        public static UpdateResult UpdateInternalSchedule(string query)
+        {
+            const string connectionString = @Credentials.ConnectionString;
+            MySqlConnection connection = null;
+            MySqlDataReader reader = null;
+            bool completed = true;
+            string log = String.Empty;
+
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+
+                var sqlCommand = new MySqlCommand(query, connection);
+                sqlCommand.Prepare();
+                sqlCommand.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch (MySqlException err)
+            {
+                log = err.ToString();
+                completed = false;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+
+            return new UpdateResult() {Completed = completed, Log = log};
         }
     }
 }
