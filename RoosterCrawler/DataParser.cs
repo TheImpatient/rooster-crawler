@@ -19,7 +19,7 @@ namespace RoosterCrawler
             WebClient webClient = new WebClient();
 
             //TODO: catch and handle 404exception, and other webclient exceptions
-            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + weekNummer + "/c/"+klas+".htm").Trim();
+            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + weekNummer + "/c/" + klas + ".htm").Trim();
 
             //String page = System.IO.File.ReadAllText("c00084.htm").Trim();
 
@@ -53,9 +53,9 @@ namespace RoosterCrawler
                 tableDatas = tr.ChildNodes.Skip(1);
                 foreach (HtmlNode td in tableDatas)
                 {
-                    for (int i = 0; i < week.Days.Length - columnCount; i++)
+                    for (int i = 0; i < week.days.Length - columnCount; i++)
                     {
-                        if (week.Days[columnCount + i].Available(rowCount))
+                        if (week.days[columnCount + i].Available(rowCount))
                         {
 
 
@@ -80,7 +80,7 @@ namespace RoosterCrawler
                                 string[] a = td.InnerText.Split(')');
                                 string[] b = a[0].Split(' ');
 
-                                week.Days[columnCount + i].Add(
+                                week.days[columnCount + i].Add(
                                     new Les()
                                     {
                                         Lokaal = b[0],
@@ -96,7 +96,7 @@ namespace RoosterCrawler
                                 string[] a = td.InnerText.Split(')');
                                 string[] b = a[0].Split(' ');
 
-                                week.Days[columnCount + i].Add(
+                                week.days[columnCount + i].Add(
                                     new Les()
                                     {
                                         Lokaal = String.Empty,
@@ -109,7 +109,7 @@ namespace RoosterCrawler
                             }
                             else// geen les
                             {
-                                week.Days[columnCount + i].Add(
+                                week.days[columnCount + i].Add(
                                 new Les()
                                 {
                                     Lokaal = String.Empty,
@@ -127,7 +127,7 @@ namespace RoosterCrawler
                                 for (int j = 1; j < rowvalue / 2; j++)
                                 {
                                     //Check for bold text
-                                    week.Days[columnCount + i].Add(
+                                    week.days[columnCount + i].Add(
                                         new Les()
                                         {
                                             Lokaal = String.Empty,
@@ -151,9 +151,71 @@ namespace RoosterCrawler
             return week;
         }
 
-        public static Week GetInternalWeekSchedule()
+        public static Week GetInternalWeekSchedule(int weekNummer, string klas)
         {
-            return new Week();
+            const string connectionString = @Credentials.ConnectionString;
+            MySqlConnection connection = null;
+            MySqlDataReader reader = null;
+
+            List<Les> values = new List<Les>();
+            List<DateTime> starts = new List<DateTime>();
+
+            Week w = new Week();
+
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+
+                //Gets all row within the current week within the same klas
+                string query = "SELECT * FROM les WHERE start_tijd >= DATE_ADD(start_tijd , INTERVAL(1-DAYOFWEEK(start_tijd )) +1 DAY) AND start_tijd < ADDDATE(DATE_ADD(start_tijd, INTERVAL(1-DAYOFWEEK(start_tijd)) +1 DAY), INTERVAL 7 DAY)AND klas = '" + klas + "' ORDER BY start_tijd ASC;";
+                var sqlCommand = new MySqlCommand(query, connection);
+                reader = sqlCommand.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    values.Add(new Les(reader.GetString(7), reader.GetString(1), reader.GetString(3), reader.GetInt32(4), reader.GetString(2), (int)(reader.GetTimeSpan(6).TotalMinutes)));
+                    starts.Add(reader.GetDateTime(5));
+                }
+            }
+            catch (MySqlException err)
+            {
+                Console.WriteLine("Error: " + err.ToString());
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+
+
+            Day[] d = new Day[5];
+            for (int i = 0; i < d.Length; i++)
+            {
+                d[i] = new Day();
+            }
+
+            for(int i = 0; i < values.Count; i++){
+                d[(int)((starts[i].DayOfWeek)-1)].Add(values[i]);
+            }
+            for (int i = 0; i < d.Length; i++)
+            {
+                for (int j = 0; j < d[i].lessen.Count(); j++)
+                {
+                    d[i].lessen[j] = (d[i].lessen[j] == null) ? new Les(): d[i].lessen[j];
+                }
+            }
+
+            w.days = d;
+            w.WeekNummer = weekNummer;
+
+            return w;
         }
 
         public static List<TaskSchedular.CrawlTask> GetCrawlSchedule()
@@ -170,16 +232,16 @@ namespace RoosterCrawler
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
 
-                var sqlCommand = new MySqlCommand("SELECT * FROM crawl_schedule WHERE date = "+DateTime.Now.Date, connection);
+                var sqlCommand = new MySqlCommand("SELECT * FROM crawl_schedule WHERE date = " + DateTime.Now.Date, connection);
                 reader = sqlCommand.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    var task = jss.Deserialize<TaskSchedular.CrawlTask>((string) reader.GetValue(2));
-                    task.Id = (int) reader.GetValue(1);
+                    var task = jss.Deserialize<TaskSchedular.CrawlTask>((string)reader.GetValue(2));
+                    task.Id = (int)reader.GetValue(1);
                     task.Datetime = DateTime.Parse((string)reader.GetValue(5));
-                    task.Interval = (int) reader.GetValue(3);
-                    task.Weken = (int) reader.GetValue(4);
+                    task.Interval = (int)reader.GetValue(3);
+                    task.Weken = (int)reader.GetValue(4);
 
                     list.Add(task);
                 }
@@ -240,7 +302,7 @@ namespace RoosterCrawler
                 }
             }
 
-            return new UpdateResult() {Completed = completed, Log = log};
+            return new UpdateResult() { Completed = completed, Log = log };
         }
     }
 }

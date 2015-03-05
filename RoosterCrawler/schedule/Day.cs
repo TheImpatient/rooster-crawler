@@ -34,5 +34,19 @@ namespace RoosterCrawler
         {
             return lessen[index] == null;
         }
+
+        public bool Equals(Day d)
+        {
+            bool allLessenEqual = true;
+            for (int i = 0; i < lessen.Length; i++)
+            {
+                if (!lessen[i].Equals(d.lessen[i]))
+                {
+                    allLessenEqual = false;
+                    break;
+                }
+            }
+            return allLessenEqual;
+        }
     }
 }

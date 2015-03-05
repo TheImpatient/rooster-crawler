@@ -13,5 +13,24 @@ namespace RoosterCrawler
         public int VakId { get; set; }
         public string Vak { get; set; }
         public int Lengte { get; set; }
+
+        public Les(string _Lokaal, string _Docent, string _VakCode, int _VakId, string _Vak, int _Lengte)
+        {
+            Lokaal = _Lokaal;
+            Docent = _Docent;
+            VakCode = _VakCode;
+            VakId = _VakId;
+            Vak = _Vak;
+            Lengte = _Lengte;
+        }
+
+        public Les()
+        {
+        }
+
+        public bool Equals(Les l)
+        {
+            return (this.Lokaal == l.Lokaal && this.Docent == l.Docent && this.VakCode == l.VakCode && this.VakId == l.VakId && this.Vak == l.Vak && this.Lengte == l.Lengte);
+        }
     }
 }

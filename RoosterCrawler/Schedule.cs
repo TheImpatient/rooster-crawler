@@ -10,12 +10,14 @@ namespace RoosterCrawler
     {
         public Week ExternalWeek;
         public Week InternalWeek;
+        public String klas;
 
-        public Schedule(int weken, string klas)
+        public Schedule(int weken, string _klas)
         {
-            //TODO: checksum version database vs crawler for newer version of week / pull all weeks and save them per class
+            klas = _klas;
+
+            InternalWeek = DataParser.GetInternalWeekSchedule(weken, klas);
             ExternalWeek = DataParser.GetExternalWeekSchedule(weken, klas);
-            InternalWeek = DataParser.GetInternalWeekSchedule();
         }
 
         /// <summary>
@@ -24,32 +26,29 @@ namespace RoosterCrawler
         /// <returns>true = the compared schedules are equal. false = schedules are not equal</returns>
         public bool Compare()
         {
-            //Check if crawlerdata is different from database
-            //als het externe rooster anders is dan ons interne rooster over schrijven we gewoon de hele week
-            //if (ExternalWeek != InternalWeek)
-           // {
-                return false;
-            //}
+            //Als het externe rooster anders is dan ons interne rooster over schrijven we gewoon de hele week
+            Week InternalWeekTrimmed = InternalWeek.GetTrimmedWeek();
+            Week ExternalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
 
-            return true;
+            return InternalWeekTrimmed.Equals(ExternalWeekTrimmed);
         }
 
         public UpdateResult Synchronize()
         {
-            string query = WeekToQuery(ExternalWeek);
+            string query = WeekToQuery(ExternalWeek, klas);
             return DataParser.UpdateInternalSchedule(query);
         }
 
-        private string WeekToQuery(Week week)
+        private string WeekToQuery(Week week, String _klas)
         {
             /*
              INSERT INTO les
-            (docent, vak, vak_code, vak_id, start_tijd, lengte)
+            (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas)
             VALUES
-            (docent, vak, vak_code, vak_id, start_tijd, lengte),
-            (docent, vak, vak_code, vak_id, start_tijd, lengte),
-            (docent, vak, vak_code, vak_id, start_tijd, lengte),
-            (docent, vak, vak_code, vak_id, start_tijd, lengte);
+            (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas),
+            (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas),
+            (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas),
+            (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas);
              */
             int[] schoolHours = new int[15] 
             {
@@ -70,19 +69,19 @@ namespace RoosterCrawler
                 1270  //21:10
             };
 
-            String query = "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte) VALUES";
+            String query = "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas) VALUES";
 
             int dayIndex = 0;
             int lesIndex = 0;
 
-            foreach (Day d in week.Days)
+            foreach (Day d in week.days)
             {
                 foreach (Les l in d.lessen)
                 {
 
                     if (l.Docent != "" && l.Vak != "" && l.VakCode != "" && l.VakId != 0)
                     {
-                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "'),";
+                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + klas + "'),";
                     }
 
                     lesIndex++;
