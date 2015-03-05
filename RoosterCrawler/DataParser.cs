@@ -12,12 +12,12 @@ namespace RoosterCrawler
     public static class DataParser
     {
         //TODO: catch webclient errors / sanitise input more / divide parts into functions for readability
-        public static Week GetExternalWeekSchedule(int weekNummer)
+        public static Week GetExternalWeekSchedule(int weekNummer, string klas)
         {
             WebClient webClient = new WebClient();
 
             //TODO: catch and handle 404exception, and other webclient exceptions
-            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + weekNummer + "/c/c00084.htm").Trim();
+            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + weekNummer + "/c/"+klas+".htm").Trim();
 
             //String page = System.IO.File.ReadAllText("c00084.htm").Trim();
 

@@ -21,6 +21,7 @@ namespace RoosterCrawler
         public void Start()
         {
             // call GetSchedule to get information about what and when to schedule crawl action (via thread elke 5 min herhalen ?)
+            // voor nu laten we dit deel er nog ff uit tot we precies weten wat we willen en wat de structuur is
 
             //interprete information, check if a crawl task has to run
             if (TaskToRun())
@@ -36,6 +37,8 @@ namespace RoosterCrawler
 
         private List<CrawlTask> GetTasksToRun()
         {
+            //get task that need to bee run and return it in a list
+
             return new List<CrawlTask>();
         }
 
