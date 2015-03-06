@@ -27,6 +27,8 @@ namespace RoosterCrawler
         public bool Compare()
         {
             //Als het externe rooster anders is dan ons interne rooster over schrijven we gewoon de hele week
+
+            //Trim de weken eerst voordat hij compared kan worden
             Week InternalWeekTrimmed = InternalWeek.GetTrimmedWeek();
             Week ExternalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
 
