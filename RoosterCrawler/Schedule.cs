@@ -38,7 +38,7 @@ namespace RoosterCrawler
         public UpdateResult Synchronize()
         {
             string query = WeekToQuery(ExternalWeek, klas);
-            return DataParser.UpdateInternalSchedule(query);
+            return DataParser.UpdateInternalData(query);
         }
 
         private string WeekToQuery(Week week, String _klas)

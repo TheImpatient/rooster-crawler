@@ -232,16 +232,19 @@ namespace RoosterCrawler
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
 
-                var sqlCommand = new MySqlCommand("SELECT * FROM crawl_schedule WHERE date = " + DateTime.Now.Date, connection);
+                string query = String.Format("SELECT * FROM crawl_schedule WHERE date = '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
+
+                var sqlCommand = new MySqlCommand(query, connection);
                 reader = sqlCommand.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    var task = jss.Deserialize<TaskSchedular.CrawlTask>((string)reader.GetValue(2));
-                    task.Id = (int)reader.GetValue(1);
-                    task.Datetime = DateTime.Parse((string)reader.GetValue(5));
-                    task.Interval = (int)reader.GetValue(3);
-                    task.Weken = (int)reader.GetValue(4);
+                    var task = jss.Deserialize<TaskSchedular.CrawlTask>((string)reader.GetValue(1));
+                    task.Id = (int)reader.GetValue(0);
+                    task.Datetime = (DateTime)reader.GetValue(4);
+                    task.Datetime = task.Datetime.Add((TimeSpan) reader.GetValue(5));
+                    task.Interval = (int)reader.GetValue(2);
+                    task.Weken = (int)reader.GetValue(3);
 
                     list.Add(task);
                 }
@@ -266,8 +269,8 @@ namespace RoosterCrawler
 
             return list;
         }
-
-        public static UpdateResult UpdateInternalSchedule(string query)
+        
+        public static UpdateResult UpdateInternalData(string query)
         {
             const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;

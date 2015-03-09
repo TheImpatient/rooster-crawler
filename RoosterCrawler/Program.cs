@@ -22,6 +22,7 @@ namespace RoosterCrawler
             // | haalt extern rooster op (voegtoe: html pagina nummer dat opgeroepen is)
             // | haalt intern rooster op (haalop: where html pagina nummer zie boventstaand)
             // | vergelijkt extern met intern en update het interne rooster indien nodig (zorg ervoor dat je de juiste week planningen met elkaar vergelijkt)
+
             var t = new TaskSchedular();
             t.Start();
         }

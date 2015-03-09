@@ -40,7 +40,7 @@ namespace RoosterCrawler
                         {
                             //all done 
                             // do a log wright 
-                            logMessage = "";
+                            logMessage = "task completed";
                             completed = "success";
                         }
                         else
@@ -78,30 +78,7 @@ namespace RoosterCrawler
 
         public void GetSchedule()
         {
-
-
-            int temp_raw_id = 1;
-            string temp_raw_klassen = "{\"klassen\":[84,82,81]}";
-            int temp_raw_interval = 5;
-            int temp_raw_weken = 2;
-            DateTime temp_raw_datetime = DateTime.Parse("2015-03-05 10:22:57");
-
-            var jss = new JavaScriptSerializer();
-            var b = jss.Deserialize<CrawlTask>(temp_raw_klassen);
-            b.Interval = temp_raw_interval;
-            b.Weken = temp_raw_weken;
-            b.Datetime = temp_raw_datetime;
-            b.Id = temp_raw_id;
-
-            _tasks.Add(b);
-
-            var b2 = jss.Deserialize<CrawlTask>(temp_raw_klassen);
-            b2.Id = 2;
-            b2.Interval = temp_raw_interval;
-            b2.Weken = temp_raw_weken;
-            b2.Datetime = DateTime.Parse("2015-03-06 10:22:57");
-
-            _tasks.Add(b2);
+            _tasks = DataParser.GetCrawlSchedule();
             // refresh inforamtion from the crawl_schedule table    
         }
 
