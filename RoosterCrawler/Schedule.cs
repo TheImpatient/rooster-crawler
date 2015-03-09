@@ -32,7 +32,7 @@ namespace RoosterCrawler
             Week InternalWeekTrimmed = InternalWeek.GetTrimmedWeek();
             Week ExternalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
 
-            return InternalWeekTrimmed.Equals(ExternalWeekTrimmed);
+            return ExternalWeekTrimmed.Equals(InternalWeekTrimmed);
         }
 
         public UpdateResult Synchronize()

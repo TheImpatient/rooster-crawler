@@ -40,6 +40,11 @@ namespace RoosterCrawler
             bool allLessenEqual = true;
             for (int i = 0; i < lessen.Length; i++)
             {
+                if (lessen.Length != d.lessen.Length)
+                {
+                    allLessenEqual = false;
+                    break;
+                }
                 if (!lessen[i].Equals(d.lessen[i]))
                 {
                     allLessenEqual = false;
