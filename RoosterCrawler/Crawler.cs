@@ -10,6 +10,7 @@ namespace RoosterCrawler
         public TaskSchedular.CrawlTask Task;
         public int Klas;
         public string KlasUrl = String.Empty;
+        public string WeekUrl = String.Empty;
         public string log = String.Empty;
 
         public Crawler(TaskSchedular.CrawlTask task, int klas)
@@ -17,6 +18,7 @@ namespace RoosterCrawler
             this.Task = task;
             this.Klas = klas;
             KlasUrl = KlasUrlBuilder(Klas);
+            WeekUrl = WeekUrlBuilder(task.Weken);
         }
 
         /// <summary>
@@ -26,7 +28,7 @@ namespace RoosterCrawler
         public bool Start()
         {
             //TODO weken moet hieronder nog goed komen
-            var schedule = new Schedule(11, KlasUrl);
+            var schedule = new Schedule(WeekUrl, KlasUrl);
             if (schedule.Compare()==false)
             {
                 //there are changes to sync
@@ -51,6 +53,20 @@ namespace RoosterCrawler
             }
 
             urlBuilder.Append(klas);
+
+            return urlBuilder.ToString();
+        }
+
+        public string WeekUrlBuilder(int week)
+        {
+            var urlBuilder = new StringBuilder("");
+
+            if (week < 10)
+            {
+                urlBuilder.Append("0");
+            }
+
+            urlBuilder.Append(week);
 
             return urlBuilder.ToString();
         }

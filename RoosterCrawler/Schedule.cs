@@ -12,7 +12,7 @@ namespace RoosterCrawler
         public Week InternalWeek;
         public String klas;
 
-        public Schedule(int weken, string _klas)
+        public Schedule(string weken, string _klas)
         {
             klas = _klas;
 

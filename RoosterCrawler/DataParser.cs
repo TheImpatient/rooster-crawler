@@ -14,7 +14,7 @@ namespace RoosterCrawler
     public static class DataParser
     {
         //TODO: catch webclient errors / sanitise input more / divide parts into functions for readability
-        public static Week GetExternalWeekSchedule(int weekNummer, string klas)
+        public static Week GetExternalWeekSchedule(string weekNummer, string klas)
         {
             WebClient webClient = new WebClient();
 
@@ -33,7 +33,7 @@ namespace RoosterCrawler
 
             //Contains all data per week, day, hour
             Week week = new Week();
-            week.WeekNummer = weekNummer;
+            week.WeekNummer = int.Parse(weekNummer);
 
 
             //Lists all elements innerText
@@ -151,7 +151,7 @@ namespace RoosterCrawler
             return week;
         }
 
-        public static Week GetInternalWeekSchedule(int weekNummer, string klas)
+        public static Week GetInternalWeekSchedule(string weekNummer, string klas)
         {
             const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;
@@ -178,7 +178,7 @@ namespace RoosterCrawler
                     starts.Add(reader.GetDateTime(5));
                 }
             }
-            catch (MySqlException err)
+            catch (Exception err)
             {
                 Console.WriteLine("Error: " + err.ToString());
             }
@@ -213,7 +213,7 @@ namespace RoosterCrawler
             }
 
             w.days = d;
-            w.WeekNummer = weekNummer;
+            w.WeekNummer = int.Parse(weekNummer);
 
             return w;
         }
@@ -232,7 +232,7 @@ namespace RoosterCrawler
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
 
-                string query = String.Format("SELECT * FROM crawl_schedule WHERE date = '{0}'", DateTime.Now.ToString("yyyy-MM-dd"));
+                string query = String.Format("SELECT * FROM crawl_schedule WHERE date = '{0}' OR perma_run = 1", DateTime.Now.ToString("yyyy-MM-dd"));
 
                 var sqlCommand = new MySqlCommand(query, connection);
                 reader = sqlCommand.ExecuteReader();
@@ -243,8 +243,9 @@ namespace RoosterCrawler
                     task.Id = (int)reader.GetValue(0);
                     task.Datetime = (DateTime)reader.GetValue(4);
                     task.Datetime = task.Datetime.Add((TimeSpan) reader.GetValue(5));
-                    task.Interval = (int)reader.GetValue(2);
+                    task.Interval = (TimeSpan)reader.GetValue(2);
                     task.Weken = (int)reader.GetValue(3);
+                    task.Permarun = (int) reader.GetValue(6) == 0 ? false : true;
 
                     list.Add(task);
                 }
