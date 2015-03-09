@@ -47,7 +47,7 @@ namespace RoosterCrawler
                             {
                                 //all done 
                                 // do a log wright 
-                                logMessage = "task completed for klas: "+klas+" week: "+crawlTask.Weken;
+                                logMessage = "klas: "+klas+" week: "+crawlTask.Weken+ " "+crawler.log;
                                 completed = "success";
                             }
                             else

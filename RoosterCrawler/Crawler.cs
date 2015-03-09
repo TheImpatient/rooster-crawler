@@ -27,7 +27,6 @@ namespace RoosterCrawler
         /// <returns>true = internal rooster is up to date. false = something went wrong</returns>
         public bool Start()
         {
-            //TODO weken moet hieronder nog goed komen
             var schedule = new Schedule(WeekUrl, KlasUrl);
             if (schedule.Compare()==false)
             {
@@ -38,6 +37,14 @@ namespace RoosterCrawler
                     this.log = ur.Log;
                     return false;
                 }
+                else
+                {
+                    log = "sync completed";
+                }
+            }
+            else
+            {
+                log = "no sync needed";
             }
 
             return true;
