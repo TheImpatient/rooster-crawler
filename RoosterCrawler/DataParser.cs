@@ -14,12 +14,13 @@ namespace RoosterCrawler
     public static class DataParser
     {
         //TODO: catch webclient errors / sanitise input more / divide parts into functions for readability
-        public static Week GetExternalWeekSchedule(string weekNummer, string klas)
+        public static Week GetExternalWeekSchedule(int weekNummer, string klas)
         {
+            string leadingZeroweekNummer = weekNummer <= 9 ? "0" + weekNummer : "" + weekNummer;
             WebClient webClient = new WebClient();
 
             //TODO: catch and handle 404exception, and other webclient exceptions
-            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + weekNummer + "/c/" + klas + ".htm").Trim();
+            String page = new WebClient().DownloadString("http://misc.hro.nl/roosterdienst/webroosters/cmi/kw3/" + leadingZeroweekNummer + "/c/" + klas + ".htm").Trim();
 
             //String page = System.IO.File.ReadAllText("c00084.htm").Trim();
 
@@ -33,7 +34,7 @@ namespace RoosterCrawler
 
             //Contains all data per week, day, hour
             Week week = new Week();
-            week.WeekNummer = int.Parse(weekNummer);
+            week.WeekNummer = weekNummer;
 
 
             //Lists all elements innerText
@@ -151,7 +152,7 @@ namespace RoosterCrawler
             return week;
         }
 
-        public static Week GetInternalWeekSchedule(string weekNummer, string klas)
+        public static Week GetInternalWeekSchedule(int weekNummer, string klas)
         {
             const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;
@@ -168,7 +169,7 @@ namespace RoosterCrawler
                 connection.Open();
 
                 //Gets all row within the current week within the same klas
-                string query = "SELECT * FROM les WHERE start_tijd >= DATE_ADD(start_tijd , INTERVAL(1-DAYOFWEEK(start_tijd )) +1 DAY) AND start_tijd < ADDDATE(DATE_ADD(start_tijd, INTERVAL(1-DAYOFWEEK(start_tijd)) +1 DAY), INTERVAL 7 DAY)AND klas = '" + klas + "' ORDER BY start_tijd ASC;";
+                string query = "SELECT * FROM les WHERE start_tijd >= date('" + Util.FirstDateOfWeek(2015, weekNummer) + "') AND start_tijd < date_add('" + Util.FirstDateOfWeek(2015, weekNummer) + "', interval 7 day) AND klas = '" + klas + "' ORDER BY start_tijd ASC;";
                 var sqlCommand = new MySqlCommand(query, connection);
                 reader = sqlCommand.ExecuteReader();
 
@@ -201,19 +202,20 @@ namespace RoosterCrawler
                 d[i] = new Day();
             }
 
-            for(int i = 0; i < values.Count; i++){
-                d[(int)((starts[i].DayOfWeek)-1)].Add(values[i]);
+            for (int i = 0; i < values.Count; i++)
+            {
+                d[(int)((starts[i].DayOfWeek) - 1)].Add(values[i]);
             }
             for (int i = 0; i < d.Length; i++)
             {
                 for (int j = 0; j < d[i].lessen.Count(); j++)
                 {
-                    d[i].lessen[j] = (d[i].lessen[j] == null) ? new Les(): d[i].lessen[j];
+                    d[i].lessen[j] = (d[i].lessen[j] == null) ? new Les() : d[i].lessen[j];
                 }
             }
 
             w.days = d;
-            w.WeekNummer = int.Parse(weekNummer);
+            w.WeekNummer = weekNummer;
 
             return w;
         }
@@ -242,10 +244,10 @@ namespace RoosterCrawler
                     var task = jss.Deserialize<TaskSchedular.CrawlTask>((string)reader.GetValue(1));
                     task.Id = (int)reader.GetValue(0);
                     task.Datetime = (DateTime)reader.GetValue(4);
-                    task.Datetime = task.Datetime.Add((TimeSpan) reader.GetValue(5));
+                    task.Datetime = task.Datetime.Add((TimeSpan)reader.GetValue(5));
                     task.Interval = (TimeSpan)reader.GetValue(2);
                     task.Weken = (int)reader.GetValue(3);
-                    task.Permarun = (int) reader.GetValue(6) == 0 ? false : true;
+                    task.Permarun = (int)reader.GetValue(6) == 0 ? false : true;
 
                     list.Add(task);
                 }
@@ -270,7 +272,7 @@ namespace RoosterCrawler
 
             return list;
         }
-        
+
         public static UpdateResult UpdateInternalData(string query)
         {
             const string connectionString = @Credentials.ConnectionString;

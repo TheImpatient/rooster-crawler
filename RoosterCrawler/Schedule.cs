@@ -12,7 +12,7 @@ namespace RoosterCrawler
         public Week InternalWeek;
         public String klas;
 
-        public Schedule(string weken, string _klas)
+        public Schedule(int weken, string _klas)
         {
             klas = _klas;
 
@@ -83,7 +83,7 @@ namespace RoosterCrawler
 
                     if (l.Docent != "" && l.Vak != "" && l.VakCode != "" && l.VakId != 0)
                     {
-                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + klas + "'),";
+                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + Util.FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + klas + "'),";
                     }
 
                     lesIndex++;
@@ -93,20 +93,6 @@ namespace RoosterCrawler
             query = query.Remove(query.Length - 1) + ";";
 
             return query;
-        }
-
-        private string FirstDateOfWeek(int year, int weekOfYear, TimeSpan offSet)
-        {
-            DateTime jan1 = new DateTime(year, 1, 1);
-            int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
-
-            DateTime firstThursday = jan1.AddDays(daysOffset);
-            Calendar cal = CultureInfo.CurrentCulture.Calendar;
-            int firstWeek = cal.GetWeekOfYear(firstThursday, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-            int weekNum = weekOfYear;
-            weekNum -= firstWeek <= 1 ? 1 : 0;
-            return firstThursday.AddDays(weekNum * 7).AddDays(-3).Add(offSet).ToString("yyyy-MM-dd HH:mm:ss");
         }
     }
 }
