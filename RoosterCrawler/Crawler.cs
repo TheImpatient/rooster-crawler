@@ -27,24 +27,32 @@ namespace RoosterCrawler
         /// <returns>true = internal rooster is up to date. false = something went wrong</returns>
         public bool Start()
         {
-            var schedule = new Schedule(WeekUrl, KlasUrl);
-            if (schedule.Compare()==false)
+            try
             {
-                //there are changes to sync
-                UpdateResult ur = schedule.Synchronize();
-                if (!ur.Completed)
+                var schedule = new Schedule(WeekUrl, KlasUrl);
+                if (schedule.Compare() == false)
                 {
-                    this.log = ur.Log;
-                    return false;
+                    //there are changes to sync
+                    UpdateResult ur = schedule.Synchronize();
+                    if (!ur.Completed)
+                    {
+                        this.log = ur.Log;
+                        return false;
+                    }
+                    else
+                    {
+                        log = "sync completed";
+                    }
                 }
                 else
                 {
-                    log = "sync completed";
+                    log = "no sync needed";
                 }
             }
-            else
+            catch (Exception e)
             {
-                log = "no sync needed";
+                log = "Exception: " + e.ToString();
+                return false;
             }
 
             return true;

@@ -55,7 +55,7 @@ namespace RoosterCrawler
                                 // return false >> prob an error 
                                 // do a log wright 
 
-                                logMessage = crawler.log;
+                                logMessage = "klas: " + klas + " week: " + crawlTask.Weken + " " + crawler.log;
                                 completed = "error";
                             }
                             new Log(crawlTask, klas, completed, logMessage);
