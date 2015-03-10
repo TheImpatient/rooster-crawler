@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 
 namespace RoosterCrawler
 {
@@ -10,11 +7,11 @@ namespace RoosterCrawler
     {
         public Week ExternalWeek;
         public Week InternalWeek;
-        public String klas;
+        public String Klas;
 
-        public Schedule(string weken, string _klas)
+        public Schedule(string weken, string klas)
         {
-            klas = _klas;
+            Klas = klas;
 
             InternalWeek = DataParser.GetInternalWeekSchedule(weken, klas);
             ExternalWeek = DataParser.GetExternalWeekSchedule(weken, klas);
@@ -29,19 +26,19 @@ namespace RoosterCrawler
             //Als het externe rooster anders is dan ons interne rooster over schrijven we gewoon de hele week
 
             //Trim de weken eerst voordat hij compared kan worden
-            Week InternalWeekTrimmed = InternalWeek.GetTrimmedWeek();
-            Week ExternalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
+            var internalWeekTrimmed = InternalWeek.GetTrimmedWeek();
+            var externalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
 
-            return ExternalWeekTrimmed.Equals(InternalWeekTrimmed);
+            return externalWeekTrimmed.Equals(internalWeekTrimmed);
         }
 
         public UpdateResult Synchronize()
         {
-            string query = WeekToQuery(ExternalWeek, klas);
+            string query = WeekToQuery(ExternalWeek, Klas);
             return DataParser.UpdateInternalData(query);
         }
 
-        private string WeekToQuery(Week week, String _klas)
+        private string WeekToQuery(Week week, String klas)
         {
             /*
              INSERT INTO les
@@ -52,7 +49,7 @@ namespace RoosterCrawler
             (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas),
             (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas);
              */
-            int[] schoolHours = new int[15] 
+            var schoolHours = new[] 
             {
                 510,  // 8:30
                 560,  // 9:20
@@ -83,7 +80,7 @@ namespace RoosterCrawler
 
                     if (l.Docent != "" && l.Vak != "" && l.VakCode != "" && l.VakId != 0)
                     {
-                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + klas + "'),";
+                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + Klas + "'),";
                     }
 
                     lesIndex++;
@@ -97,7 +94,7 @@ namespace RoosterCrawler
 
         private string FirstDateOfWeek(int year, int weekOfYear, TimeSpan offSet)
         {
-            DateTime jan1 = new DateTime(year, 1, 1);
+            var jan1 = new DateTime(year, 1, 1);
             int daysOffset = DayOfWeek.Thursday - jan1.DayOfWeek;
 
             DateTime firstThursday = jan1.AddDays(daysOffset);
