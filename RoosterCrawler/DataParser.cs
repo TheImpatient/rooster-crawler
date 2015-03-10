@@ -92,7 +92,7 @@ namespace RoosterCrawler
                                         Lengte = rowvalue * 25
                                     });
                             }
-                            else if (td.InnerText != "") //er is geen lokaal bekend
+                            else if (td.InnerText != "" && specialDayFilter(td, (rowvalue*25), doc)) //er is geen lokaal bekend
                             {
                                 string[] a = td.InnerText.Split(')');
                                 string[] b = a[0].Split(' ');
@@ -309,6 +309,21 @@ namespace RoosterCrawler
             }
 
             return new UpdateResult() { Completed = completed, Log = log };
+        }
+
+        private static bool specialDayFilter(HtmlNode td, int lengte, HtmlDocument doc)
+        {
+            if (td.InnerText.Contains(')'))
+            {
+                //legit vak
+                return true;
+            }
+            else if (lengte == 750 && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font").First().GetAttributeValue("size",2) == 3)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }
