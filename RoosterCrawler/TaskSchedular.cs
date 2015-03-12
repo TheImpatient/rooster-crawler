@@ -40,30 +40,29 @@ namespace RoosterCrawler
                             _starTime = DateTime.Now;
 
                             var crawler = new Crawler(crawlTask, klas);
-                            string logMessage = String.Empty;
-                            string completed = String.Empty;
-
                             if (crawler.Start())
                             {
                                 //all done 
                                 // do a log wright 
-                                logMessage = "klas: "+klas+" week: "+crawlTask.Weken+ " "+crawler.log;
-                                completed = "success";
+                                crawler.UpdateResult.Completed = true;
                             }
                             else
                             {
                                 // return false >> prob an error 
                                 // do a log wright 
-
-                                logMessage = "klas: " + klas + " week: " + crawlTask.Weken + " " + crawler.log;
-                                completed = "error";
+                                crawler.UpdateResult.Completed = false;
                             }
-                            new Log(crawlTask, klas, completed, logMessage);
 
+                            crawler.UpdateResult.TaskId = crawlTask.Id;
+                            crawler.UpdateResult.Klas = klas;
+                            crawler.UpdateResult.Week = crawlTask.Weken;
 
 
                             _endTime = DateTime.Now;
                             TimeSpan elapsedTime = _endTime.Subtract(_starTime);
+
+                            crawler.UpdateResult.Duration = elapsedTime;
+                            new Log(crawlTask, crawler.UpdateResult);
 
                             if (elapsedTime.TotalSeconds < crawlTask.Interval.TotalSeconds)
                             {

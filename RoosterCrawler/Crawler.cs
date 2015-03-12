@@ -11,7 +11,7 @@ namespace RoosterCrawler
         public int Klas;
         public string KlasUrl = String.Empty;
         public int Weeknummer = 0;
-        public string log = String.Empty;
+        public UpdateResult UpdateResult = new UpdateResult();
 
         public Crawler(TaskSchedular.CrawlTask task, int klas)
         {            
@@ -31,27 +31,28 @@ namespace RoosterCrawler
             {
                 var schedule = new Schedule(Weeknummer, KlasUrl);
                 if (schedule.Compare() == false)
-            {
-                //there are changes to sync
-                UpdateResult ur = schedule.Synchronize();
-                if (!ur.Completed)
                 {
-                    this.log = ur.Log;
-                    return false;
-                }
+                    //there are changes to sync
+                    UpdateResult ur = schedule.Synchronize();
+                    if (!ur.Completed)
+                    {
+                        this.UpdateResult = ur;
+                        return false;
+                    }
                     else
                     {
-                        log = "sync completed";
+                        UpdateResult.Action = Log.DataAction.SyncDone;
                     }
                 }
                 else
                 {
-                    log = "no sync needed";
+                    UpdateResult.Action = Log.DataAction.NoSync;
                 }
             }
             catch (Exception e)
             {
-                log = "Exception: " + e.ToString();
+                UpdateResult.Action = Log.DataAction.Exception;
+                UpdateResult.Exception = e.ToString();
                 return false;
             }
 

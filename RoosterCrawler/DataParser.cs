@@ -308,7 +308,7 @@ namespace RoosterCrawler
                 }
             }
 
-            return new UpdateResult() { Completed = completed, Log = log };
+            return new UpdateResult() { Completed = completed, Exception = log };
         }
 
         private static bool specialDayFilter(HtmlNode td, int lengte, HtmlDocument doc)
