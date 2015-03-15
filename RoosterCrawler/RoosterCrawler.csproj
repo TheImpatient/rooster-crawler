@@ -63,6 +63,7 @@
     <Compile Include="Crawler.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="DataParser.cs" />
+    <Compile Include="Heartbeat.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="schedule\Les.cs" />
     <Compile Include="Schedule.cs" />

@@ -13,6 +13,6 @@ namespace RoosterCrawler
         public int Week { get; set; }
         public string Exception { get; set; }
         public Log.DataAction Action { get; set; }
-        public TimeSpan Duration { get; set; }
+        public int Duration { get; set; }
     }
 }

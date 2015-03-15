@@ -15,7 +15,7 @@ namespace RoosterCrawler
         private DateTime _endTime;
 
         public TaskSchedular()
-        {
+        {            
             // > task schedular 
             // | haal informatie op welke rooster onderdelen gecrawlt moet worden en om de hoeveel tijd dit moet gebeuren , crawl info van db table 'crawl_schedule'
             // | op gedicteerde tijden start de task schedular de rooster crawler en geeft mee welke rooster onderdelen gecrawlt moeten worden
@@ -35,39 +35,43 @@ namespace RoosterCrawler
                     //misschien hier de tijd pakken, als een task te snel klaar is zodat we niet geblokt worden door school
                     foreach (CrawlTask crawlTask in GetTasksToRun())
                     {
-                        foreach (int klas in crawlTask.Klassen)
+                        //old roosters get removed very quickly so check if its still this week but saturday or sunday
+                        if ((crawlTask.Weken == Util.GetWeekOfYear(DateTime.Now) && (DateTime.Now.DayOfWeek != DayOfWeek.Saturday && DateTime.Now.DayOfWeek != DayOfWeek.Sunday)) || crawlTask.Weken != Util.GetWeekOfYear(DateTime.Now))
                         {
-                            _starTime = DateTime.Now;
-
-                            var crawler = new Crawler(crawlTask, klas);
-                            if (crawler.Start())
+                            foreach (int klas in crawlTask.Klassen)
                             {
-                                //all done 
-                                // do a log wright 
-                                crawler.UpdateResult.Completed = true;
-                            }
-                            else
-                            {
-                                // return false >> prob an error 
-                                // do a log wright 
-                                crawler.UpdateResult.Completed = false;
-                            }
+                                _starTime = DateTime.Now;
 
-                            crawler.UpdateResult.TaskId = crawlTask.Id;
-                            crawler.UpdateResult.Klas = klas;
-                            crawler.UpdateResult.Week = crawlTask.Weken;
+                                var crawler = new Crawler(crawlTask, klas);
+                                if (crawler.Start())
+                                {
+                                    //all done 
+                                    // do a log wright 
+                                    crawler.UpdateResult.Completed = true;
+                                }
+                                else
+                                {
+                                    // return false >> prob an error 
+                                    // do a log wright 
+                                    crawler.UpdateResult.Completed = false;
+                                }
+
+                                crawler.UpdateResult.TaskId = crawlTask.Id;
+                                crawler.UpdateResult.Klas = klas;
+                                crawler.UpdateResult.Week = crawlTask.Weken;
 
 
-                            _endTime = DateTime.Now;
-                            TimeSpan elapsedTime = _endTime.Subtract(_starTime);
+                                _endTime = DateTime.Now;
+                                TimeSpan elapsedTime = _endTime.Subtract(_starTime);
 
-                            crawler.UpdateResult.Duration = elapsedTime;
-                            new Log(crawlTask, crawler.UpdateResult);
+                                crawler.UpdateResult.Duration = (int) elapsedTime.TotalMilliseconds;
+                                new Log(crawlTask, crawler.UpdateResult);
 
-                            if (elapsedTime.TotalSeconds < crawlTask.Interval.TotalSeconds)
-                            {
-                                TimeSpan ts = crawlTask.Interval.Subtract(elapsedTime);
-                                Thread.Sleep(ts);
+                                if (elapsedTime.TotalSeconds < crawlTask.Interval.TotalSeconds)
+                                {
+                                    TimeSpan ts = crawlTask.Interval.Subtract(elapsedTime);
+                                    Thread.Sleep(ts);
+                                }
                             }
                         }
                     }
