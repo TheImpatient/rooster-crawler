@@ -26,8 +26,7 @@ namespace HeartbeatMonitor
         {
             InitializeComponent();
             errorLabel = lblError;
-            udpServerSocket = new Socket(AddressFamily.InterNetwork,
-                SocketType.Dgram, ProtocolType.Udp);
+            udpServerSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             udpServerSocket.Bind(ep);
             udpServerSocket.BeginReceiveFrom(buffer, 0, 1024, SocketFlags.None, ref ep, new AsyncCallback(ReceiveData), udpServerSocket);
 
@@ -94,12 +93,12 @@ namespace HeartbeatMonitor
                 switch(text)
                 {
                     case "No Answer from Crawler":
-                        errorLabel.Text = "No Answer from Crawler";
+                        errorLabel.Text = DateTime.Now.TimeOfDay.ToString();
                         errorLabel.BackColor = Color.Red;
                         break;
 
                     case "Crawler OK":
-                        errorLabel.Text = "Crawler OK";
+                        errorLabel.Text = DateTime.Now.TimeOfDay.ToString();
                         errorLabel.BackColor = Color.Green;
                         break;
                 }
@@ -108,7 +107,7 @@ namespace HeartbeatMonitor
 
         private void UpdateHeartbeat(bool status)
         {
-            string query = String.Format("UPDATE Heartbeat SET  running = '{0}' WHERE  id = 1 ;",status?1:0);
+            string query = String.Format("UPDATE Heartbeat SET  running = '{0}' , timestamp = '{1}' WHERE  id = 1 ;",status?1:0,DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
             const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;
@@ -125,7 +124,7 @@ namespace HeartbeatMonitor
             }
             catch (MySqlException err)
             {
-
+                Console.WriteLine(err.ToString());
             }
             finally
             {
@@ -134,6 +133,21 @@ namespace HeartbeatMonitor
                     connection.Close();
                 }
             }
+        }
+
+        /// <summary>
+        /// Dispose used Ressources.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
         }
     }
 }
