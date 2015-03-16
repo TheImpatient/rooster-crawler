@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace RoosterCrawler
 {
@@ -92,7 +93,7 @@ namespace RoosterCrawler
             }
             query = query.Remove(query.Length - 1) + ";";
 
-            return query;
+            return Regex.Replace(query, @"[\r\n\x00\x1a\\'""]", @"\$0");
         }
     }
 }
