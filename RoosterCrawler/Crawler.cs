@@ -62,16 +62,12 @@ namespace RoosterCrawler
         public string KlasUrlBuilder(int klas)
         {
             var urlBuilder = new StringBuilder("c");
-
             for (int i = 0; i < (5 - klas.ToString().Length); i++)
             {
                 urlBuilder.Append("0");
             }
-
             urlBuilder.Append(klas);
-
             return urlBuilder.ToString();
         }
-
     }
 }
