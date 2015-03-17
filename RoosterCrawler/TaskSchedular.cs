@@ -36,7 +36,7 @@ namespace RoosterCrawler
                     foreach (CrawlTask crawlTask in GetTasksToRun())
                     {
                         //old roosters get removed very quickly so check if its still this week but saturday or sunday
-                        if ((crawlTask.Weken == Util.GetWeekOfYear(DateTime.Now) && (DateTime.Now.DayOfWeek != DayOfWeek.Saturday && DateTime.Now.DayOfWeek != DayOfWeek.Sunday)) || crawlTask.Weken != Util.GetWeekOfYear(DateTime.Now))
+                        if ((crawlTask.Weken == Util.GetWeekOfYear(DateTime.Now) && (DateTime.Now.DayOfWeek != DayOfWeek.Saturday && DateTime.Now.DayOfWeek != DayOfWeek.Sunday)) || crawlTask.Weken > Util.GetWeekOfYear(DateTime.Now))
                         {
                             foreach (int klas in crawlTask.Klassen)
                             {
