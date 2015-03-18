@@ -92,6 +92,7 @@ namespace RoosterCrawler
                 dayIndex++;
             }
             query = query.Remove(query.Length - 1) + ";";
+            query = String.Format(query);
 
             return Regex.Replace(query, @"[\r\n\x00\x1a\\'""]", @"\$0");
         }
