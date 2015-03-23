@@ -286,7 +286,9 @@ namespace RoosterCrawler
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
 
+
                 var sqlCommand = new MySqlCommand(query, connection);
+                
                 sqlCommand.Prepare();
                 sqlCommand.ExecuteNonQuery();
                 connection.Close();

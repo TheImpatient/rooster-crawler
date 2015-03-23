@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using MySql.Data.MySqlClient;
 
 namespace RoosterCrawler
 {
@@ -72,6 +73,8 @@ namespace RoosterCrawler
                 1270  //21:10
             };
 
+
+            var query2 = new StringBuilder("INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas) VALUES");
             String query = "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas) VALUES";
 
             int dayIndex = 0;
@@ -84,6 +87,7 @@ namespace RoosterCrawler
 
                     if (l.Docent != "" && l.Vak != "" && l.VakCode != "" && l.VakId != 0)
                     {
+                        
                         query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + Util.FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + klas + "'),";
                     }
 
@@ -94,7 +98,8 @@ namespace RoosterCrawler
             query = query.Remove(query.Length - 1) + ";";
             query = String.Format(query);
 
-            return Regex.Replace(query, @"[\r\n\x00\x1a\\'""]", @"\$0");
+            return MySqlHelper.EscapeString(query);
+            //return Regex.Replace(query, @"[\r\n\x00\x1a\\'""]", @"\$0");
         }
     }
 }
