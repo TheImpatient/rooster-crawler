@@ -87,8 +87,8 @@ namespace RoosterCrawler
 
                     if (l.Docent != "" && l.Vak != "" && l.VakCode != "" && l.VakId != 0)
                     {
-                        
-                        query += "('" + l.Docent + "', '" + l.Vak + "', '" + l.VakCode + "', " + l.VakId + ", '" + Util.FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + l.Lokaal + "' , '" + klas + "'),";
+
+                        query += "('" + escape(l.Docent) + "', '" + escape(l.Vak) + "', '" + escape(l.VakCode) + "', " + l.VakId + ", '" + Util.FirstDateOfWeek(2015, week.WeekNummer, new TimeSpan(dayIndex, 0, schoolHours[lesIndex % 15], 0)) + "', '" + new TimeSpan(0, 0, l.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + escape(l.Lokaal) + "' , '" + escape(klas) + "'),";
                     }
 
                     lesIndex++;
@@ -96,10 +96,15 @@ namespace RoosterCrawler
                 dayIndex++;
             }
             query = query.Remove(query.Length - 1) + ";";
-            query = String.Format(query);
+            //query = String.Format(query);
+            return query;
+            //return MySqlHelper.EscapeString(query);
+            //return Regex.Replace(query, @"([^a-zA-Z0-9_]|^\s)", string.Empty);
+        }
 
-            return MySqlHelper.EscapeString(query);
-            //return Regex.Replace(query, @"[\r\n\x00\x1a\\'""]", @"\$0");
+        private String escape(string str)
+        {
+            return Regex.Replace(str, "/(['\"\\/])/g", string.Empty);
         }
     }
 }

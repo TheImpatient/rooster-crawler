@@ -27,6 +27,10 @@ namespace RoosterCrawler
 
             var t = new TaskSchedular();
             t.Start();
+
+            //var a = new Schedule(13, "c00001");
+            //var b = a.Synchronize();
+            //Console.WriteLine(b.ToString());
         }
     }
 }
