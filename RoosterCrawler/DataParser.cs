@@ -78,17 +78,20 @@ namespace RoosterCrawler
 
                             if (td.InnerText != "" && doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b") != null) //er is een lokaal bekend
                             {
-                                string[] a = td.InnerText.Split(')');
+                                var rawKlas = doc.DocumentNode.SelectNodes("//tr").First().SelectNodes("td/font/b").FirstOrDefault().InnerText;
+                                var rawInfo = td.InnerText.Replace(rawKlas, String.Empty).Trim();
+                                
+                                string[] a = rawInfo.Split(')');
                                 string[] b = a[0].Split(' ');
 
                                 week.days[columnCount + i].Add(
                                     new Les()
                                     {
-                                        Lokaal = b[0],
-                                        Docent = b[1],
+                                        Lokaal = rawKlas,
+                                        Docent = b[0],
                                         Vak = a[1].Trim(),
-                                        VakCode = b[2],
-                                        VakId = int.Parse(b[3]),
+                                        VakCode = b[1],
+                                        VakId = int.Parse(b[2]),
                                         Lengte = rowvalue * 25
                                     });
                             }
