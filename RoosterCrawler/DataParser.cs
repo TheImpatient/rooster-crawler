@@ -168,6 +168,7 @@ namespace RoosterCrawler
                 connection = new MySqlConnection(connectionString);
                 connection.Open();
 
+                //TODO: use year as parameter instead of cardcoded                                   vvvv
                 //Gets all row within the current week within the same klas
                 string query = "SELECT * FROM les WHERE start_tijd >= date('" + Util.FirstDateOfWeek(2015, weekNummer) + "') AND start_tijd < date_add('" + Util.FirstDateOfWeek(2015, weekNummer) + "', interval 7 day) AND klas = '" + klas + "' ORDER BY start_tijd ASC;";
                 var sqlCommand = new MySqlCommand(query, connection);
