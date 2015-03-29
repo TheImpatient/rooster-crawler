@@ -104,7 +104,7 @@ namespace RoosterCrawler
 
         private String escape(string str)
         {
-            return Regex.Replace(str, "/(['\"\\/])/g", string.Empty);
+            return Regex.Replace(str, @"([\'""\\/])", @"\$0");
         }
     }
 }
