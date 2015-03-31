@@ -14,6 +14,7 @@ namespace RoosterCrawler
         public int VakId { get; set; }
         public string Vak { get; set; }
         public int Lengte { get; set; }
+        public string StartTijd { get; set; }
 
         public Les(string _Lokaal, string _Docent, string _VakCode, int _VakId, string _Vak, int _Lengte, int _InternalId)
         {

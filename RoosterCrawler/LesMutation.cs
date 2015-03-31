@@ -9,12 +9,12 @@ namespace RoosterCrawler
     {
         public enum Mutation { CREATE, UPDATE, DELETE }
 
-        public Mutation Order{ get; set;}
-        public Les NewLes{ get; set;}
+        public Mutation Type{ get; set;}
+        public Les MLes{ get; set;}
         public LesMutation(Mutation m, Les l)
         {
-            this.Order = m;
-            this.NewLes = l;
+            this.Type = m;
+            this.MLes = l;
         }
     }
 }

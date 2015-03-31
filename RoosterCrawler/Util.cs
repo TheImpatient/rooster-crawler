@@ -8,6 +8,24 @@ namespace RoosterCrawler
 {
     public static class Util
     {
+        public static int[] schoolHours = new int[15] 
+            {
+                510,  // 8:30
+                560,  // 9:20
+                630,  //10:30
+                680,  //11:20
+                730,  //12:10
+                780,  //13:00
+                830,  //13:50
+                900,  //15:00
+                950,  //15:50
+                1020, //17:00
+                1070, //17:50
+                1120, //18:40
+                1170, //19:30
+                1220, //20:20
+                1270  //21:10
+            };
         public static string FirstDateOfWeek(int year, int weekOfYear, TimeSpan offSet)
         {
             DateTime jan1 = new DateTime(year, 1, 1);

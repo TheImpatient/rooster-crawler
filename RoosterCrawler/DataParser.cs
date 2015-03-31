@@ -279,9 +279,6 @@ namespace RoosterCrawler
 
         public static UpdateResult UpdateInternalData(string query)
         {
-            //GET LIST WITH MUTATIONS
-            //INSERT LIST INTO AGENDA_MUTATIONS
-            //APPLY MUTATIONS TO INTERNAL
             const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;
             MySqlDataReader reader = null;
