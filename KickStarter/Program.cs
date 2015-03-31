@@ -9,8 +9,11 @@ namespace KickStarter
     {
         static void Main(string[] args)
         {
-            RoosterCrawler.Program app = new RoosterCrawler.Program();
-            app.Main();
+            //RoosterCrawler.Program app = new RoosterCrawler.Program();
+            //app.Main();
+
+            AgendaAgent.Program agenda = new AgendaAgent.Program();
+            
         }
     }
 }
