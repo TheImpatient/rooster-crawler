@@ -34,6 +34,9 @@ namespace RoosterCrawler
             Week InternalWeekTrimmed = InternalWeek.GetTrimmedWeek();
             Week ExternalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
 
+            //InternalWeekTrimmed.days[0].lessen = new Les[0];
+            //var m = ExternalWeekTrimmed.GetMutation(InternalWeekTrimmed);
+
             return ExternalWeekTrimmed.Equals(InternalWeekTrimmed);
         }
 

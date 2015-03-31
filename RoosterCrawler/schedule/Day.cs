@@ -37,6 +37,7 @@ namespace RoosterCrawler
 
         public bool Equals(Day d)
         {
+
             bool allLessenEqual = true;
             for (int i = 0; i < lessen.Length; i++)
             {

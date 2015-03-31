@@ -23,13 +23,13 @@ namespace RoosterCrawler
             // | haalt intern rooster op (haalop: where html pagina nummer zie boventstaand)
             // | vergelijkt extern met intern en update het interne rooster indien nodig (zorg ervoor dat je de juiste week planningen met elkaar vergelijkt)
 
-            var h = new Heartbeat();
+            //var h = new Heartbeat();
 
-            var t = new TaskSchedular();
-            t.Start();
+            //var t = new TaskSchedular();
+            //t.Start();
 
-            //var a = new Schedule(13, "c00056");
-            //var b = a.Synchronize();
+            var a = new Schedule(14, "c00056");
+            var b = a.Compare();
             //Console.WriteLine(b.ToString());
         }
     }

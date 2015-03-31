@@ -179,7 +179,7 @@ namespace RoosterCrawler
 
                 while (reader.Read())
                 {
-                    values.Add(new Les(reader.GetString(7), reader.GetString(1), reader.GetString(3), reader.GetInt32(4), reader.GetString(2), (int)(reader.GetTimeSpan(6).TotalMinutes)));
+                    values.Add(new Les(reader.GetString(7), reader.GetString(1), reader.GetString(3), reader.GetInt32(4), reader.GetString(2), (int)(reader.GetTimeSpan(6).TotalMinutes), reader.GetInt32(0)));
                     starts.Add(reader.GetDateTime(5));
                 }
             }
@@ -279,6 +279,9 @@ namespace RoosterCrawler
 
         public static UpdateResult UpdateInternalData(string query)
         {
+            //GET LIST WITH MUTATIONS
+            //INSERT LIST INTO AGENDA_MUTATIONS
+            //APPLY MUTATIONS TO INTERNAL
             const string connectionString = @Credentials.ConnectionString;
             MySqlConnection connection = null;
             MySqlDataReader reader = null;
