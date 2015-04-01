@@ -40,13 +40,16 @@ namespace RoosterCrawler
             {
                 ds[j].lessen = days[j].lessen.Where(x => x.Docent != "" && x.Vak != "" && x.VakCode != "" && x.VakId != 0).ToArray<Les>();
                 //TODO: Every les needs to be assigned a starttijd depending on the index
-
+                int l = 0;
                 for (int k = 0; k < days[j].lessen.Length; k++)
                 {
-                    int l = 0;
+
                     if (days[j].lessen[k].Docent != "" && days[j].lessen[k].Vak != "" && days[j].lessen[k].VakCode != "" && days[j].lessen[k].VakId != 0)
                     {
-                        ds[j].lessen[l].StartTijd = Util.FirstDateOfWeek(2015, WeekNummer, new TimeSpan(j, 0, Util.schoolHours[k % days[j].lessen.Length], 0));
+                        if (ds[j].lessen[l].StartTijd == null)
+                        {
+                            ds[j].lessen[l].StartTijd = Util.FirstDateOfWeek(2015, WeekNummer, new TimeSpan(j, 0, Util.schoolHours[k % days[j].lessen.Length], 0));
+                        }
                         l++;
                     }
                 }
