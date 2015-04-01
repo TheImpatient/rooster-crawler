@@ -31,10 +31,10 @@ namespace AgendaAgent
                     return AddEvent(task.Les);
 
                 case LesTaak.TaakAction.Update:
-                    return UpdateEvent(task.Les);
+                    return UpdateEvent(task.LesGUID, task.Les);
 
                 case LesTaak.TaakAction.Delete:
-                    return DeleteEvent(task.Les);
+                    return DeleteEvent(task.LesGUID);
                 
                 default:
                     return false;
@@ -102,16 +102,37 @@ namespace AgendaAgent
             return false;
         }
 
-        public bool UpdateEvent(Les les)
+        public bool UpdateEvent(string guid, Les les)
         {
+            try
+            {
+                var item = _agenda.Items.FirstOrDefault(x => x.Id.Equals(guid));
+                item.Summary = "";
+                item.Description = "";
+                item.Location = "";
+                item.Start = new EventDateTime() {DateTime = les.StartTijd};
+                item.End = new EventDateTime() {DateTime = les.StartTijd.Add(les.Lengte)};
 
-            //_service.Events.Update()
-            return true;
+                _service.Events.Update(item, Repository._agendaId, guid).Execute();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
 
-        public bool DeleteEvent(Les les)
+        public bool DeleteEvent(string guid)
         {
-            return true;
+            try
+            {
+                _service.Events.Delete(Repository._agendaId, guid).Execute();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }

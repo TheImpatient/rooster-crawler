@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AgendaAgent
@@ -28,6 +29,8 @@ namespace AgendaAgent
                         if (_agenda.LesEventHandler(lesTaak))
                         {
                             //all is OK
+                            //remove task from agenda_tasks table
+                            Repository.DeleteAgendaTask(lesTaak.Id);
                         }
                         else
                         {
@@ -38,18 +41,11 @@ namespace AgendaAgent
                 else
                 {
                     //no tasks, wait for 1 minute and check again
+                    Thread.Sleep(1 * 60 * 1000);
                 }
 
                 //update google agenda info so app has same info as gcalendar
             }
-        }
-
-        public void Sync()
-        {
-            //get all les info from db. 
-            //into list
-            // add events to calendar
-
         }
     }
 }

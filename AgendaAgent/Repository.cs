@@ -61,6 +61,7 @@ namespace AgendaAgent
                 {
                     var task = new LesTaak
                     {
+                        Id = (int) reader.GetValue(0),
                         LesGUID = String.IsNullOrEmpty((string) reader.GetValue(3))? String.Empty : (string) reader.GetValue(3),
                         Les= String.IsNullOrEmpty((string)reader.GetValue(2)) ? new Les() : JsonConvert.DeserializeObject<Les>((string)reader.GetValue(2)),
                         Action = (int)reader.GetValue(1) == 0 ? LesTaak.TaakAction.Create : (int)reader.GetValue(1) == 1 ? LesTaak.TaakAction.Update : LesTaak.TaakAction.Delete
@@ -88,6 +89,38 @@ namespace AgendaAgent
             }
 
             return list;
+        }
+
+        public static bool DeleteAgendaTask(int id)
+        {
+            const string connectionString = "Server=195.8.208.128;Port=3351;Database=rooster;Uid=crawler;Pwd=g!MqEFCXbVK0P3hv^Jy5;";
+            MySqlConnection connection = null;
+
+            try
+            {
+                connection = new MySqlConnection(connectionString);
+                connection.Open();
+
+                string query = String.Format("DELETE FROM agenda_tasks WHERE id = {0}",id);
+
+                var sqlCommand = new MySqlCommand(query, connection);
+                sqlCommand.Prepare();
+                sqlCommand.ExecuteNonQuery();
+
+                connection.Close();
+            }
+            catch (MySqlException err)
+            {
+                
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+            return true;
         }
 
         public static bool GetData()

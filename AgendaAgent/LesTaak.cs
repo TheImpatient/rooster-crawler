@@ -13,7 +13,7 @@ namespace AgendaAgent
             Update = 1,
             Delete = 2
         }
-
+        public int Id { get; set; }
         public string LesGUID { get; set; }
         public Les Les { get; set; }
         public TaakAction Action { get; set; }
