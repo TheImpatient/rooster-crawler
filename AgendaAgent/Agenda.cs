@@ -34,7 +34,7 @@ namespace AgendaAgent
                     return UpdateEvent(task.Les);
 
                 case LesTaak.TaakAction.Delete:
-                    return DeleteEvent(task.Les.Guid);
+                    return DeleteEvent(task.Les.CalendarGuid);
                 
                 default:
                     return false;
@@ -43,7 +43,7 @@ namespace AgendaAgent
 
         public bool AddEvent(Les les)
         {
-            string guid = System.Guid.NewGuid().ToString();
+            string guid = System.Guid.NewGuid().ToString("N");
             var startTime = new EventDateTime()
             {
                 DateTime = les.StartTijd
@@ -84,17 +84,21 @@ namespace AgendaAgent
                 GuestsCanSeeOtherGuests = false,               
                 Description = "Vak: " + les.Vak + "\r" + "Vak code: " + les.VakCode + "\r" + "Docent: " + les.Docent + "\r" + "Lokaal: " + les.Lokaal,
                 //Attendees = attendeeList,
-                Location = les.Lokaal
+                Location = "Wijnhaven 107 rotterdam"
             };
 
             try
             {
                 Event returnobj = _service.Events.Insert(event1, Repository._agendaId).Execute();
                 //do update on lessen table and add guid to les
+
+                var query = String.Format("UPDATE les SET calendar_guid = '{0}' WHERE les_guid = '{1}'", guid, les.LesGuid);
+                Repository.UpdateInternalData(query);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 return false;
                 throw;
             }
@@ -105,16 +109,16 @@ namespace AgendaAgent
             try
             {
                 
-                if (_agenda.Items.Any(x => x.Id.Equals(les.Guid)))
+                if (_agenda.Items.Any(x => x.Id.Equals(les.CalendarGuid)))
                 {
-                    var item = _agenda.Items.FirstOrDefault(x => x.Id.Equals(les.Guid));
+                    var item = _agenda.Items.FirstOrDefault(x => x.Id.Equals(les.CalendarGuid));
                     item.Summary = les.Vak;
                     item.Description = "Vak: " + les.Vak + "\r" + "Vak code: " + les.VakCode + "\r" + "Docent: " + les.Docent + "\r" + "Lokaal: " + les.Lokaal;
                     item.Location = les.Lokaal;
                     item.Start = new EventDateTime() { DateTime = les.StartTijd };
                     item.End = new EventDateTime() { DateTime = les.StartTijd.Add(les.Lengte) };
 
-                    _service.Events.Update(item, Repository._agendaId, les.Guid).Execute();
+                    _service.Events.Update(item, Repository._agendaId, les.CalendarGuid).Execute();
                     return true;
                 }
                 else

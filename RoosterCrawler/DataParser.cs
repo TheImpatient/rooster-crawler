@@ -179,7 +179,7 @@ namespace RoosterCrawler
 
                 while (reader.Read())
                 {
-                    values.Add(new Les(reader.GetString(7), reader.GetString(1), reader.GetString(3), reader.GetInt32(4), reader.GetString(2), (int)(reader.GetTimeSpan(6).TotalMinutes), reader.GetInt32(0), String.IsNullOrEmpty(reader.GetString(9)) ? String.Empty : reader.GetString(9)));
+                    values.Add(new Les(reader.GetString(7), reader.GetString(1), reader.GetString(3), reader.GetInt32(4), reader.GetString(2), (int)(reader.GetTimeSpan(6).TotalMinutes), reader.GetInt32(0), reader.GetString(10), String.IsNullOrEmpty(reader.GetString(9)) ? String.Empty : reader.GetString(9)));
                     starts.Add(reader.GetDateTime(5));
                 }
             }

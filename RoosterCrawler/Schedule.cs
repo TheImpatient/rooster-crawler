@@ -47,6 +47,17 @@ namespace RoosterCrawler
 
             //Remove comment to enable mutations
             var mutationList = ExternalWeekTrimmed.GetMutations(InternalWeekTrimmed);
+
+
+            foreach (var lesMutation in mutationList)
+            {
+                if (String.IsNullOrEmpty(lesMutation.MLes.LesGuid))
+                {
+                    lesMutation.MLes.LesGuid = System.Guid.NewGuid().ToString();
+                }
+            }
+
+
             updateAgenda(mutationList, klas);
             string query = MutationToQuery(mutationList, klas);
 
@@ -67,10 +78,11 @@ namespace RoosterCrawler
                     StartTijd = DateTime.Parse(lesMutation.MLes.StartTijd),
                     Vak = lesMutation.MLes.Vak,
                     VakCode = lesMutation.MLes.VakCode,
-                    VakId = lesMutation.MLes.InternalId,
-                    Guid = lesMutation.MLes.Guid
+                    VakId = lesMutation.MLes.VakId,
+                    CalendarGuid = lesMutation.MLes.CalendarGuid,
+                    LesGuid = lesMutation.MLes.LesGuid
                 };
-                query.Append(String.Format(list.Last().Equals(lesMutation) ? "({0}, '{1}');" : "({0}, '{1}'),", lesMutation.Type, JsonConvert.SerializeObject(les)));
+                query.Append(String.Format(list.Last().Equals(lesMutation) ? "({0}, '{1}');" : "({0}, '{1}'),", (int) lesMutation.Type, JsonConvert.SerializeObject(les)));
             }
 
             DataParser.UpdateInternalData(query.ToString());
@@ -97,12 +109,12 @@ namespace RoosterCrawler
 
             if(createMutations.Count > 0)
             {
-                createQuery += "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas) VALUES";
+                createQuery += "INSERT INTO les (docent, vak, vak_code, vak_id, start_tijd, lengte, lokaal, klas, les_guid) VALUES";
                 foreach (LesMutation m in createMutations)
                 {
                     if (m.MLes.Docent != "" && m.MLes.Vak != "" && m.MLes.VakCode != "" && m.MLes.VakId != 0)
                     {
-                        createQuery += "('" + escape(m.MLes.Docent) + "', '" + escape(m.MLes.Vak) + "', '" + escape(m.MLes.VakCode) + "', " + m.MLes.VakId + ", '" + m.MLes.StartTijd + "', '" + new TimeSpan(0, 0, m.MLes.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + escape(m.MLes.Lokaal) + "' , '" + escape(_klas) + "'),";
+                        createQuery += "('" + escape(m.MLes.Docent) + "', '" + escape(m.MLes.Vak) + "', '" + escape(m.MLes.VakCode) + "', " + m.MLes.VakId + ", '" + m.MLes.StartTijd + "', '" + new TimeSpan(0, 0, m.MLes.Lengte, 0).ToString(@"hh\:mm\:ss") + "' , '" + escape(m.MLes.Lokaal) + "' , '" + escape(_klas) + "', '"+m.MLes.LesGuid+"'),";
                     }
                 }
                 createQuery = createQuery.Remove(createQuery.Length - 1) + ";";
