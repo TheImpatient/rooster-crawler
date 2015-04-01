@@ -256,7 +256,7 @@ namespace RoosterCrawler
 
         private String escape(string str)
         {
-            return Regex.Replace(str, @"([\'""\\/])", @"\$0");
+            return Regex.Replace(str, @"([\(\)\'""\\/])", @"\$0");
         }
     }
 }
