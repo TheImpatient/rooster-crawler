@@ -31,10 +31,10 @@ namespace AgendaAgent
                     return AddEvent(task.Les);
 
                 case LesTaak.TaakAction.Update:
-                    return UpdateEvent(task.LesGUID, task.Les);
+                    return UpdateEvent(task.Les);
 
                 case LesTaak.TaakAction.Delete:
-                    return DeleteEvent(task.LesGUID);
+                    return DeleteEvent(task.Les.Guid);
                 
                 default:
                     return false;
@@ -98,26 +98,33 @@ namespace AgendaAgent
                 return false;
                 throw;
             }
-
-            return false;
         }
 
-        public bool UpdateEvent(string guid, Les les)
+        public bool UpdateEvent(Les les)
         {
             try
             {
-                var item = _agenda.Items.FirstOrDefault(x => x.Id.Equals(guid));
-                item.Summary = "";
-                item.Description = "";
-                item.Location = "";
-                item.Start = new EventDateTime() {DateTime = les.StartTijd};
-                item.End = new EventDateTime() {DateTime = les.StartTijd.Add(les.Lengte)};
+                
+                if (_agenda.Items.Any(x => x.Id.Equals(les.Guid)))
+                {
+                    var item = _agenda.Items.FirstOrDefault(x => x.Id.Equals(les.Guid));
+                    item.Summary = les.Vak;
+                    item.Description = "Vak: " + les.Vak + "\r" + "Vak code: " + les.VakCode + "\r" + "Docent: " + les.Docent + "\r" + "Lokaal: " + les.Lokaal;
+                    item.Location = les.Lokaal;
+                    item.Start = new EventDateTime() { DateTime = les.StartTijd };
+                    item.End = new EventDateTime() { DateTime = les.StartTijd.Add(les.Lengte) };
 
-                _service.Events.Update(item, Repository._agendaId, guid).Execute();
-                return true;
+                    _service.Events.Update(item, Repository._agendaId, les.Guid).Execute();
+                    return true;
+                }
+                else
+                {
+                    return AddEvent(les);
+                }              
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 return false;
             }
         }
@@ -131,6 +138,7 @@ namespace AgendaAgent
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 return false;
             }
         }

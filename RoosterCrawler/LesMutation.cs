@@ -7,7 +7,7 @@ namespace RoosterCrawler
 {
     public class LesMutation
     {
-        public enum Mutation { CREATE, UPDATE, DELETE }
+        public enum Mutation { CREATE = 0, UPDATE = 1, DELETE = 2 }
 
         public Mutation Type{ get; set;}
         public Les MLes{ get; set;}

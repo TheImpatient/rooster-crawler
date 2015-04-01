@@ -15,5 +15,6 @@ namespace AgendaAgent
         public TimeSpan Lengte { get; set; }
         public DateTime StartTijd { get; set; }
         public string Klas { get; set; }
+        public string Guid { get; set; }
     }
 }

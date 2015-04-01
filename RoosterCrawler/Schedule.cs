@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 
 namespace RoosterCrawler
 {
@@ -42,12 +43,37 @@ namespace RoosterCrawler
             Week InternalWeekTrimmed = InternalWeek.GetTrimmedWeek();
             Week ExternalWeekTrimmed = ExternalWeek.GetTrimmedWeek();
 
-            string query = WeekToQuery(ExternalWeek, klas);
+            //string query = WeekToQuery(ExternalWeek, klas);
 
             //Remove comment to enable mutations
-            //string query = MutationToQuery(ExternalWeekTrimmed.GetMutations(InternalWeekTrimmed), klas);
+            var mutationList = ExternalWeekTrimmed.GetMutations(InternalWeekTrimmed);
+            updateAgenda(mutationList, klas);
+            string query = MutationToQuery(mutationList, klas);
 
             return DataParser.UpdateInternalData(query);
+        }
+
+        private void updateAgenda(List<LesMutation> list,string klas)
+        {
+            var query = new StringBuilder("INSERT INTO agenda_tasks (action, les) VALUES ");
+            foreach (var lesMutation in list)
+            {
+                var les = new AgendaAgent.Les()
+                {
+                    Docent = lesMutation.MLes.Docent,
+                    Klas = klas,
+                    Lengte = new TimeSpan(0, 0, lesMutation.MLes.Lengte, 0),
+                    Lokaal = lesMutation.MLes.Lokaal,
+                    StartTijd = DateTime.Parse(lesMutation.MLes.StartTijd),
+                    Vak = lesMutation.MLes.Vak,
+                    VakCode = lesMutation.MLes.VakCode,
+                    VakId = lesMutation.MLes.InternalId,
+                    Guid = lesMutation.MLes.Guid
+                };
+                query.Append(String.Format(list.Last().Equals(lesMutation) ? "({0}, '{1}');" : "({0}, '{1}'),", lesMutation.Type, JsonConvert.SerializeObject(les)));
+            }
+
+            DataParser.UpdateInternalData(query.ToString());
         }
 
         private string MutationToQuery(List<LesMutation> _mutations, String _klas)

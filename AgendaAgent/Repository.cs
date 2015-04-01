@@ -61,10 +61,9 @@ namespace AgendaAgent
                 {
                     var task = new LesTaak
                     {
-                        Id = (int) reader.GetValue(0),
-                        LesGUID = String.IsNullOrEmpty((string) reader.GetValue(3))? String.Empty : (string) reader.GetValue(3),
-                        Les= String.IsNullOrEmpty((string)reader.GetValue(2)) ? new Les() : JsonConvert.DeserializeObject<Les>((string)reader.GetValue(2)),
-                        Action = (int)reader.GetValue(1) == 0 ? LesTaak.TaakAction.Create : (int)reader.GetValue(1) == 1 ? LesTaak.TaakAction.Update : LesTaak.TaakAction.Delete
+                        Id = reader.GetInt32(0),
+                        Les= String.IsNullOrEmpty(reader.GetString(2)) ? new Les() : JsonConvert.DeserializeObject<Les>(reader.GetString(2)),
+                        Action = reader.GetInt32(1) == 0 ? LesTaak.TaakAction.Create : reader.GetInt32(1) == 1 ? LesTaak.TaakAction.Update : LesTaak.TaakAction.Delete
                     };
 
                     list.Add(task);
@@ -111,7 +110,7 @@ namespace AgendaAgent
             }
             catch (MySqlException err)
             {
-                
+                Console.WriteLine(err.ToString());
             }
             finally
             {
