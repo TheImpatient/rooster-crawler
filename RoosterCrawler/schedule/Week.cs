@@ -39,7 +39,6 @@ namespace RoosterCrawler
             for (int j = 0; j < days.Length; j++)
             {
                 ds[j].lessen = days[j].lessen.Where(x => x.Docent != "" && x.Vak != "" && x.VakCode != "" && x.VakId != 0).ToArray<Les>();
-                //TODO: Every les needs to be assigned a starttijd depending on the index
                 int l = 0;
                 for (int k = 0; k < days[j].lessen.Length; k++)
                 {
@@ -90,6 +89,8 @@ namespace RoosterCrawler
             List<Les> allExterLessen = getLessen();
             List<Les> allInterLessen = w.getLessen();
 
+            List<Les> removeables = allInterLessen;
+
             bool contains;
 
             //Compare all external lessen with the internal ones
@@ -101,8 +102,7 @@ namespace RoosterCrawler
                     if (allExterLessen[i].Equals(allInterLessen[j]))
                     {
                         contains = true;
-                        allInterLessen.RemoveAt(j);
-                        j--;
+                        removeables.RemoveAt(j);
                         break;
                     }
                     //ALTER ROW
@@ -111,8 +111,7 @@ namespace RoosterCrawler
                         allExterLessen[i].InternalId = allInterLessen[i].InternalId;
                         ls.Add(new LesMutation(LesMutation.Mutation.UPDATE, allExterLessen[i]));
                         contains = true;
-                        allInterLessen.RemoveAt(j);
-                        j--;
+                        removeables.RemoveAt(j);
                         break;
                     }
                 }
@@ -123,7 +122,7 @@ namespace RoosterCrawler
                 }
             }
             //DELETE ROW remaining
-            foreach (Les l in allInterLessen)
+            foreach (Les l in removeables)
             {
                 ls.Add(new LesMutation(LesMutation.Mutation.DELETE, l));
             }
