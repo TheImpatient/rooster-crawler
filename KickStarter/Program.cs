@@ -13,8 +13,8 @@ namespace KickStarter
             var crawlerThread = new Thread(new ThreadStart(Crawler));
             var agendaThread = new Thread(new ThreadStart(Agenda));
             
-            //crawlerThread.Start();
-            //agendaThread.Start();           
+            crawlerThread.Start();
+            agendaThread.Start();           
         }
 
         static void Agenda()
